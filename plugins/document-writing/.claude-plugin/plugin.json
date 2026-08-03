@@ -1,0 +1,15 @@
+{
+  "name": "document-writing",
+  "displayName": "Document writing",
+  "version": "1.0.0",
+  "description": "The Claude Code plugin for document writing.",
+  "author": {
+    "name": "Yukihiko Shinoda",
+    "email": "yuk.hik.future@gmail.com",
+    "url": "https://github.com/yukihiko-shinoda"
+  },
+  "homepage": "https://github.com/yukihiko-shinoda/claude-code-marketplace-mksens",
+  "repository": "https://github.com/yukihiko-shinoda/claude-code-marketplace-mksens",
+  "license": "MIT",
+  "keywords": ["document", "documentation"]
+}

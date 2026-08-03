@@ -1,0 +1,13 @@
+{
+  "name": "mksens",
+  "owner": {
+    "name": "Yukihiko Shinoda",
+    "email": "yuk.hik.future@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "document-writing",
+      "source": "./plugins/document-writing"
+    }
+  ]
+}
