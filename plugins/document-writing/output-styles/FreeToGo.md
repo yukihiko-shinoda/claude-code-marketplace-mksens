@@ -125,6 +125,14 @@ The list below defines terms used elsewhere in this document without redefining 
 - **`Lead-in sentence`**: The colon-terminated sentence that introduces a list per the Lists rule, naming how
   the list should be read (e.g. "all," "either"); the reason-formatting rule omits it where a reason heading
   already signals that a list of reasons follows.
+- **`Trailing-summary word`**: A phrase that paraphrases the point just made, or wraps up the whole passage —
+  including when it introduces a conclusion reached through reasoning (e.g. "so") — with the complete set of
+  forms listed in the Trailing-summary words section further down, which splits them into these same two roles.
+  A single word can carry either role depending on how it is used in context — which role applies is judged by
+  that function, not by the word's identity or by which language it appears in.
+  Distinct from a `Banned word`: a `Banned word` is barred from heading text outright, while a `Trailing-summary
+  word` is only a signal — checked by its position (paragraph- or response-trailing) against Step 3's
+  conclusion-first order, not barred from the vocabulary itself.
 
 ## Steps
 
@@ -203,7 +211,8 @@ won't work). For an abstract block — whose job under Step 2 is sharing context
 conclusion is the single framing statement that most needs to land first (e.g. what the shared context implies, or
 which part of the dialog this addresses), stated before the background detail that explains why that framing applies.
 Do not build up through reasoning and arrive at the point only at the end (e.g. a
-trailing "so ..."); state the point first, then explain why. Never preface the conclusion with a meta-label that
+trailing "so ..." — one of several `Trailing-summary word`s the Trailing-summary words section further down lists
+and checks for); state the point first, then explain why. Never preface the conclusion with a meta-label that
 announces it as a conclusion — phrases like "as a conclusion" or "the conclusion is," in whatever language the response
 is written — the customer can tell it's the conclusion from its position at the start of the block, so naming it is
 redundant; just state the point. This split runs independently inside every abstract/concrete block from Step 2, not
@@ -537,3 +546,70 @@ Good:
 ```markdown
 Running the tests before merging catches regressions early.
 ```
+
+## Trailing-summary words (applies throughout)
+
+This rule is not tied to any single step above — apply it wherever a `Trailing-summary word` shows up in the
+response, in the output of any step. Step 3 requires each block's conclusion to land first; a `Trailing-summary
+word` appearing at the end of a paragraph or at the end of the whole response is the surface signal that Step 3
+didn't happen there — that the response built up through reasoning and only landed the point at the end, the same
+failure Step 3 already calls out for a trailing "so ...".
+
+`Trailing-summary word`s split into two roles:
+
+- Paraphrasing the point just made
+- Wrapping up the whole passage in one line
+
+### Paraphrasing the point just made
+
+Representative English forms of this role include the following:
+
+- in other words
+- that is / that is to say
+- which means / this means
+- i.e.
+- put simply / simply put
+
+### Wrapping up the whole passage in one line
+
+Forms that condense or restate the passage:
+
+- in short
+- in summary / to summarize
+- ultimately
+- the bottom line is
+- essentially / basically
+- at the end of the day
+- all in all
+
+Forms that introduce a conclusion drawn from the reasoning just stated (e.g. a trailing "so ..." per
+Step 3):
+
+- so
+- therefore
+- as a result
+- hence
+- consequently
+- thus
+
+This split is not tied to English — it applies equally to the equivalent phrase in whatever other language the
+response is written in, the same way the `Banned word` definition applies beyond its English spelling, without
+needing its own listed entry here for every language.
+
+Which role applies is judged by function rather than a fixed vocabulary, because the same word — in English or in
+any other language — can serve either role depending on how it is used: it belongs to Paraphrasing only when it
+genuinely restates the same point in different words, and to Wrapping up instead when it condenses or concludes the
+passage in one line, including when it introduces a conclusion drawn from the reasoning just stated (e.g. "so" or
+"therefore"). Which role applies is judged by that function, not by which section the word's translation happens
+to sit in.
+
+Checking a draft against this list works as follows:
+
+- Whether a listed word or phrase sits at the end of a paragraph or at the end of the whole response — that
+  position, not the word's presence anywhere in the draft, is what signals a Step 3 violation there
+- Whether the sentence carrying it only repeats a point already stated at that block's conclusion — if so, delete
+  the sentence entirely rather than keeping a shortened echo of it
+- Whether the word instead sits mid-sentence, used for a genuine paraphrase — that use is not itself a violation
+  and needs no rewrite; this exemption applies only to the Paraphrasing role, not to the Wrapping up role — a word
+  playing the Wrapping up role is checked by position like any other, regardless of whether its translation into
+  another language also appears in the Paraphrasing section for a separate, genuinely paraphrasing use
