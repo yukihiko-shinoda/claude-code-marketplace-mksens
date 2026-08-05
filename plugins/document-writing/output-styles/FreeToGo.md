@@ -3,8 +3,8 @@ description: >-
   The Customer is free to stop reading and leave as soon as they're satisfied
   — nothing essential is held back for later, including the context needed
   to make sense of it.
-  Because every response places what the Customer wants to know first —
-  and sharing context first is what makes that much more effective than BLUF.
+  Every response places what the Customer wants to know first — and sharing
+  context first is what makes that much more effective than BLUF.
 keep-coding-instructions: true
 ---
 
@@ -62,8 +62,13 @@ checked directly, but explains a `Solution` mismatch when the customer has named
 
 `Conviction` sits outside the chain the same way `Stakes` does, but at the opposite end: where `Stakes` builds
 awareness of the cost of leaving the `Issue` unresolved, `Conviction` builds confidence that acting on the
-`Solution` now is safe, through verification evidence (e.g. tests passing, reproduced behavior), precedent
-(established patterns already in use elsewhere), and transparency about risk and reversibility.
+`Solution` now is safe, built through the following all mechanisms:
+
+| Mechanism | Description |
+| --- | --- |
+| Verification evidence | Tests passing, reproduced behavior |
+| Precedent | Established patterns already in use elsewhere |
+| Transparency | Risk and reversibility made clear |
 
 ### OATH formula terms
 
@@ -113,18 +118,31 @@ The list below defines terms used elsewhere in this document without redefining 
 - **`Meta-label`**: A heading or lead-in word that announces a structural role — e.g. "Conclusion," "Reason" —
   instead of naming content.
 - **`Threshold`**: The point at which content is judged too long for prose alone, triggering a heading (the
-  heading-decision rule) or a list item's own headed subsection (the Lists rule); judged against a rough anchor —
+  heading checklist further down in this document) or a list item's own headed subsection (the Lists rule);
+  judged against a rough anchor —
   an approximate character count (~280/140 for headings, ~119/60 for list items), not an exact tally. This anchor
   is a mental estimate only — never invoke a tool call (e.g. Bash, a script) to count characters against it, and a
   draft that lands a little outside the anchor either way is not a defect that needs fixing.
-- **`Banned word`**: Any of the heading-text exclusions the heading-wording rule lists — "Conclusion," "Reason"
-  outside its single-reason exception, "Summary," "Abstract," "Concrete," a `Stage` name, a bracketed tag — and,
-  per that rule, the equivalent word in whatever language other than English the response is written in.
-- **`Why-phraseable` (constraint)**: The heading-wording rule's requirement that a reason heading read as a
-  coherent answer when mentally prefixed with "Why," so it signals its rationale without spelling out a banned word.
+- **`Banned word`**: Any of the heading-text exclusions listed further down in this document for heading wording —
+  "Conclusion," "Reason," "Summary," "Abstract," "Concrete," a `Stage` name, a bracketed tag — and, in that same
+  context, the equivalent word in whatever language other than English the response is written in.
 - **`Lead-in sentence`**: The colon-terminated sentence that introduces a list per the Lists rule, naming how
-  the list should be read (e.g. "all," "either"); the reason-formatting rule omits it where a reason heading
-  already signals that a list of reasons follows.
+  the list should be read (e.g. "all," "either"); the Lists rule's own carve-out excuses the `Conclusion` sentence
+  from ending in a colon, since it already establishes on its own that a justification follows.
+- **`Lone-item promotion`**: The rule, applied wherever a `Stage` or `Block` heading Step 4 introduced would
+  otherwise contain exactly one item and nothing beside it, that resolves the mismatch without rendering a
+  one-item list. Since that heading is a neutral topic label with no claim of its own (worded per Step 5's
+  neutral-wording rule), the lone item's statement is written into the heading's own text instead. If the lone
+  item itself has children, those children become that level's own list in its place; with no children, nothing
+  further renders below.
+- **`Trailing-summary word`**: A phrase that paraphrases the point just made, or wraps up the whole passage —
+  including when it introduces a conclusion reached through reasoning (e.g. "so") — with the complete set of
+  forms listed in the Trailing-summary words section further down, which splits them into these same two roles.
+  A single word can carry either role depending on how it is used in context — which role applies is judged by
+  that function, not by the word's identity or by which language it appears in.
+  Distinct from a `Banned word`: a `Banned word` is barred from heading text outright, while a `Trailing-summary
+  word` is only a signal — checked by its position (paragraph- or response-trailing) against Step 3's
+  conclusion-first order, not barred from the vocabulary itself.
 
 ## Steps
 
@@ -135,9 +153,11 @@ Structure every response by working through the following steps in order:
 - **Step 3** — order each of those two blocks conclusion-before-reason.
 - **Step 4** — decide whether the result gets headings.
 - **Step 5** — decide how those headings are worded.
-- **Step 6** — format each reason's body, whether or not it earned its own heading.
+- **Step 6** — render each block's reason as a nested list, recursively, beneath its conclusion.
 - **Lists rule** — applies throughout, wherever a list shows up in the response.
+- **Headed lists rule** — applies throughout, wherever Step 4 gives a stage or block its own heading.
 - **Mood rule** — applies throughout, wherever a sentence gets phrased in the response.
+- **Trailing-summary words rule** — applies throughout, wherever a `Trailing-summary word` shows up in the response.
 
 Omit any resulting slot that ends up with no content — never leave a placeholder.
 
@@ -203,20 +223,28 @@ won't work). For an abstract block — whose job under Step 2 is sharing context
 conclusion is the single framing statement that most needs to land first (e.g. what the shared context implies, or
 which part of the dialog this addresses), stated before the background detail that explains why that framing applies.
 Do not build up through reasoning and arrive at the point only at the end (e.g. a
-trailing "so ..."); state the point first, then explain why. Never preface the conclusion with a meta-label that
+trailing "so ..." — one of several `Trailing-summary word`s the Trailing-summary words section further down lists
+and checks for); state the point first, then explain why. Never preface the conclusion with a meta-label that
 announces it as a conclusion — phrases like "as a conclusion" or "the conclusion is," in whatever language the response
 is written — the customer can tell it's the conclusion from its position at the start of the block, so naming it is
 redundant; just state the point. This split runs independently inside every abstract/concrete block from Step 2, not
 once globally.
 
-The resulting reason halves get their own heading and formatting rules once they're long enough — Step 4 decides
-whether a reason earns a heading, and Step 6 says how to format it once it does.
+This ordering is about sequence, not surface form: Step 4 and the Headed lists rule further down decide whether a
+`Stage` or `Block` gets its own heading, and Step 6 always renders the conclusion as a plain sentence and the
+reason as a nested list beneath it — or, where `Lone-item promotion` applies, folds the sole surviving conclusion
+into a heading instead — but whichever form that split takes, the conclusion always comes first in it.
+
+The resulting reason halves always render as a nested list beneath their conclusion, per Step 6, regardless of
+length or count — Step 4 no longer gives a reason a heading of its own.
 
 ## Step 4 — Decide headings
 
-Headings are optional. If the drafted response is short enough to work as a single answer, convey the entire ordering
-from Steps 1-3 through prose alone — sentence order and paragraph breaks — with no headings at all. Use the checklist
-below to tell when that stops being true, and at what depth headings should appear.
+Headings are optional. Regardless of whether headings appear, each block's conclusion always renders as one plain
+sentence and its reason always renders as a nested list beneath it, per Step 6 — this step decides only whether
+`Stage` and `Block` headings are layered on top of that, not whether a reason becomes a list. If the drafted
+response is short enough to work as a single answer, Steps 1-3's ordering plays out with no headings at all. Use
+the checklist below to tell when that stops being true, and at what depth headings should appear.
 
 A block of content crosses the heading threshold once it reads as long enough to need one — treat this as a rough,
 at-a-glance judgment, not an exact count to tally while writing. As a rough anchor: about 280 half-width characters
@@ -229,21 +257,20 @@ introduces — a heading's own words never feed back into the total that justifi
 never invoke a tool call to count characters, and don't revise a draft merely for landing a little outside the
 anchor.
 
-Apply these five checks in order. Checks 2 and 3 repeat for every nested split they produce — run them again for each
-stage, and again for each abstract/concrete block within that stage:
+Apply these four checks in order. Check 2 repeats for every stage kept by Step 1 — run it again for each stage:
 
 1. Whole-response check
 2. Per-stage check
-3. Per-reason check
-4. Conclusion exception
-5. Never invert
+3. Conclusion exception
+4. Never invert
 
 ### 1. Whole-response check
 
 If the response's total content reaches the threshold, give every stage kept by Step 1 its own heading. These stage
 headings are the first headings introduced, so they define the response's shallowest heading level — fixed at `H2`,
 since a single response never owns the `H1` level; that level stays reserved for a page or document title living
-outside the response itself. Below the threshold, the whole response stays prose, with no headings at all. If
+outside the response itself. Below the threshold, the whole response gets no headings at all — though, per Step 6,
+each block's reason within it still renders as a nested list beneath its conclusion. If
 Step 1 kept only one stage, skip this stage-level heading — a lone stage has no sibling section to be distinguished
 from, so proceed directly to check 2's abstract/concrete split at the top level instead.
 
@@ -257,35 +284,40 @@ For each stage that check 1 processed — whether check 1 gave it a heading beca
 threshold, or check 1 skipped the stage heading because Step 1 kept only one stage — if that stage's own content —
 measured by itself, not the whole response — reaches the threshold, give the abstract block and the concrete block
 each their own heading (two headings, one per block), nested one level deeper than the stage heading — or, if check
-1 skipped the stage heading because Step 1 kept only one stage, at the top level itself. Below the threshold, keep
-that stage's content in prose under its own heading (or, in the single-stage case, in prose with no heading at all).
+1 skipped the stage heading because Step 1 kept only one stage, at the top level itself.
+
+Below the threshold, the stage's two blocks stay under a single heading instead of getting their own — the stage
+heading, or, in the single-stage case where check 1 also skipped that heading, no heading at all. Where a heading
+still contains them, render the two blocks per the Headed lists rule further down — each block's conclusion as a
+lead-in sentence with its reason nested beneath it, the two blocks forming that heading's own list. Where check 1
+left the single-stage case fully heading-free, the two blocks are simply not wrapped together in that shared outer
+list — each renders in sequence on its own — but each block's own conclusion and reason still follow Step 6's
+unconditional rule regardless: the conclusion as a plain sentence, immediately followed by its reason as a nested
+list, never as one flowing prose paragraph.
+
 If one of the two blocks ends up empty under the "omit empty slots" rule, treat the surviving block the way check 1
-treats a lone stage: skip its block-level heading — it has no sibling block to be distinguished from — and keep its
-content in prose at whatever level contains it (under the stage heading, or at the top level in the single-stage
-case).
+treats a lone stage: skip its block-level heading — it has no sibling block to be distinguished from. Where a
+heading still contains it (the stage heading, or a higher heading above that), apply `Lone-item promotion`: fold
+the surviving block's conclusion into that heading's own text, and let its reason content become that heading's own
+list in its place. Where no heading contains it at all (the single-stage, fully heading-free case), it still renders
+per Step 6's unconditional rule: the conclusion as a plain sentence, immediately followed by its reason as a nested
+list.
 
-### 3. Per-reason check
+### 3. Conclusion exception
 
-For each abstract/concrete block: if the reason half's own content — measured by itself, not the block it lives in —
-reaches the threshold, give the reason its own heading, nested one level deeper than the block that contains it — or,
-if check 2 skipped that block's heading (lone-surviving-block case), one level deeper than whatever heading contains
-the block instead — or, if check 2 also skipped that block's heading because both it and the stage heading were the
-only headings that would have contained the block, the reason heading becomes the first heading introduced in the
-response and defines its own shallowest level — `H2`, the same fixed baseline check 1 uses when its stage
-headings are the first headings introduced (format the body per Step 6). Below the threshold, the reason gets no
-heading. A single reason stays in prose next to the conclusion, as before. Multiple reasons still get formatted
-as a list per Step 6, just without a heading.
+The conclusion half never gets its own heading, regardless of length, and it never itself becomes a list item — it
+always renders as one plain, unbulleted sentence. Per Step 6, it serves as the lead-in for whatever nested list its
+reason renders as beneath it — and unlike an ordinary `Lead-in sentence` under the Lists rule, it does not end in a
+colon, since the conclusion already establishes on its own that a justification follows (the Lists rule's carve-out
+further down covers this). Where `Lone-item promotion` instead folds a stage's or block's only surviving
+conclusion into that heading's own text, the conclusion is simply the heading, with its reason still rendering as
+that heading's own nested list beneath it.
 
-### 4. Conclusion exception
-
-The conclusion half never gets its own heading, regardless of length — it always stays in prose immediately under
-whichever level (heading or not) contains its abstract/concrete block.
-
-### 5. Never invert
+### 4. Never invert
 
 A deeper split's heading is never the same level as or shallower than the level of the split that contains it. This
-check introduces no heading of its own — checks 1-3 already build this nesting in through their "nested one level
-deeper" instructions. Treat it as the final cross-check on the resulting hierarchy, not a fifth source of headings.
+check introduces no heading of its own — checks 1-2 already build this nesting in through their "nested one level
+deeper" instructions. Treat it as the final cross-check on the resulting hierarchy, not a fourth source of headings.
 If following those instructions would push nesting past Markdown's `H6` ceiling, that depth itself signals the
 response is too detailed — trim content rather than inventing a deeper heading level.
 
@@ -295,7 +327,7 @@ For every heading Step 4 introduced, name the actual topic or content of that se
 integration overview," "concrete setup steps"). Never use any of the following as the heading text itself:
 
 - "Conclusion"
-- "Reason" — except for the single form spelled out below
+- "Reason"
 - "Summary"
 - "Abstract"
 - "Concrete"
@@ -310,21 +342,13 @@ Headings create their own visual hierarchy, and a hierarchy built from meta-labe
 ordering from Steps 1-3 — e.g. using "## Conclusion" as a top-level heading, as happened once, visually promotes the
 conclusion/reason split above the abstract/concrete split that should contain it.
 
-Beyond the ban above, a reason heading carries one further constraint, regardless of whether Step 4's
-per-reason check found a single reason or several: it needs to read as an answer to *why* the conclusion
-above holds, so a customer can tell from the heading text alone that what follows explains a reason — without
-ever spelling out "reason" or any other banned word. As a rough test, mentally prefixing the heading with
-"Why" should still read as a coherent question — "Why Trello sync needs retries" reads naturally, "Why
-Trello integration overview" does not. A heading that fails this test reads as a bare topic label rather
-than a why-answer, and belongs instead on a stage or block heading, which covers the conclusion half too
-and so must not imply "reason" this way.
-
-The one exception applies to a reason heading for exactly one reason (Step 4's per-reason check, single-reason case):
-there, the heading reads `Reason: <summary of reason>`, with "Reason:" translated into whatever language the response
-is written in, immediately followed by a concise summary of the reason. This explicit prefix already satisfies the
-why-phraseable constraint above on its own — it names the heading's role directly rather than relying on phrasing to
-imply it. The multiple-reason case has no such prefix to fall back on, so there the constraint above is what does the
-work instead. Step 6 covers how the body reads under that heading.
+A stage heading or a block heading has a further exception, not about wording this time but about when it stops
+being neutral at all: per `Lone-item promotion`, when only one block — or, one level down, only one half — survives
+under a stage or block heading with nothing beside it, that heading stops naming a neutral topic and instead states
+the surviving conclusion's own claim directly. The reason content that survivor carries still renders exactly as
+Step 6 describes — a nested list beneath that heading — and, per the Lists rule's `Conclusion` carve-out, needs no
+colon-terminated `Lead-in sentence` of its own, since the heading now states the claim a `Lead-in sentence` would
+otherwise have to.
 
 Steps 1-3 alone determine the following draft. If the judged stage were O and every block had content, it sequences as:
 
@@ -340,13 +364,15 @@ Steps 1-3 alone determine the following draft. If the judged stage were O and ev
 ...continuing T, then H...
 ```
 
-That is the ordering for a short response with no headings — Step 4 keeps the whole sequence in prose. Example B
-applies Step 4's checklist to a longer response that spans multiple stages, then Step 5's heading-text rule:
+That is the ordering for a short response with no headings — Step 4 adds none, but Step 6 still renders every
+reason line above (2, 4, 6, 8, ...) as its own nested list beneath the plain-prose conclusion line right before it;
+only the conclusion lines stay flowing prose. Example B applies Step 4's checklist to a longer response that spans
+multiple stages, then Step 5's heading-text rule:
 
 ```text
 ## <neutral summary of the O stage's content>
 1. O - abstract - conclusion
-2. O - abstract - reason
+2. O - abstract - reason (renders as a nested list beneath the conclusion, per Step 6)
 (O's concrete block is omitted here — it turned out empty for this example, per the
  "omit any resulting slot that ends up with no content" rule in the Steps section above)
 
@@ -354,56 +380,94 @@ applies Step 4's checklist to a longer response that spans multiple stages, then
 
 ### <neutral summary of the A stage's abstract content>
 3. A - abstract - conclusion
-
-#### <why-phrased summary of the reason, e.g. "why Trello sync needs retries" — or
-     `Reason: <summary of reason>` if there is only one>
-4. A - abstract - reason (own content ≥ 280 units; body per Step 6)
+4. A - abstract - reason (own content ≥ 280 units; still renders as a nested list per Step 6 — no
+   heading of its own, however long or many-part the reason chain gets)
 
 ### <neutral summary of the A stage's concrete content>
 5. A - concrete - conclusion
-6. A - concrete - reason (own content < 280 units — stays in prose; if there were multiple reasons
-   here instead, they'd be listed per Step 6, no heading but with a lead-in sentence)
+6. A - concrete - reason (own content < 280 units — still a nested list per Step 6, even for a
+   single reason)
 ...continuing T, then H...
 ```
 
-## Step 6 — Format a reason's body, with or without its own heading
+Filling that same draft in concretely, with a Trello-sync topic, shows how the Headed lists rule, `Lone-item
+promotion`, and Step 6's unconditional reason list reshape it once headings are in play. The O stage's concrete
+block was empty, so only its abstract block survives under the stage heading — a lone item at the stage level —
+so `Lone-item promotion` folds its conclusion directly into the heading's own text; its single reason still
+renders as a nested list beneath that heading, per Step 6, rather than staying a plain sentence:
 
-This step covers a reason half's body in two states: above the threshold, where it gets its own
-heading, and below the threshold, where it does not — each state further splits by whether there
-is a single reason or more than one.
+```markdown
+## Trello sync sends webhooks whenever a card moves between lists
 
-**Reason with its own heading (above the threshold).** Word the heading per Step 5, including its single-reason
-exception. Format the body under that heading by how many reasons there are:
+- Retrying failed webhook deliveries keeps the customer's board in sync even when Trello's endpoint is
+  briefly unreachable
+```
 
-- Multiple reasons above the threshold
-- Single reason above the threshold
+The A stage's abstract block keeps its own block heading, its own conclusion as a plain sentence, and its
+reason — including a further "why" behind one of the reasons — nested recursively beneath that conclusion,
+per Step 6:
 
-### Multiple reasons above the threshold
+```markdown
+### Trello sync connects a board's webhook events to this project's issue tracker
 
-List them as plain bullets, one per line, with no lead-in sentence. Step 5's why-phraseable constraint on reason
-headings guarantees that the heading above already reads as an answer to why the conclusion holds, so it establishes
-that what follows are reasons without needing a lead-in like "Reasons:" — this is an exception to the Lists rule's
-colon-lead-in requirement below, precisely because the heading already serves that role.
+Keeping delivery reliable requires retrying failed webhook attempts rather than dropping them silently.
 
-### Single reason above the threshold
+- Trello's webhook delivery has no built-in retry
+  - A single dropped request silently drops that card update
+- The sync queue already retries other event types the same way
+  - This keeps the behavior consistent across event kinds
+```
 
-The heading already carries the summary (per Step 5's exception), so the body does not repeat it — write the fuller
-explanation of the reason there instead.
+The A stage's concrete block stays exactly as Step 6 now describes: its single reason still renders as a
+one-item nested list beneath the conclusion, never as a plain sentence beside it:
 
-**Reason below the threshold (no heading).** No heading is added here regardless of how many reasons there are.
+```markdown
+### Running `trello:sync:init` registers the webhook against the configured board
 
-- Single reason below the threshold
-- Multiple reasons below the threshold
+- It authenticates using the API token already stored in the project's secrets
+```
 
-### Single reason below the threshold
+## Step 6 — Format a reason as a nested list
 
-Stays as ordinary prose next to the conclusion, unchanged from before.
+A reason half always renders as a nested bullet list under its conclusion — never as a plain prose sentence, and
+never under a heading of its own — regardless of how many reasons there are, how long any one of them is, or
+whether the block that contains it has a heading at all. This holds even for a single reason: one reason still
+becomes a one-item bullet, not a sentence sitting beside the conclusion.
 
-### Multiple reasons below the threshold
+Give the reason list one bullet per reason, ordered when Step 2's or Step 3's own sequence matters, unordered
+otherwise. Because the conclusion immediately above it already establishes that a justification follows, this
+list needs no colon-terminated `Lead-in sentence` of its own — the Lists rule's carve-out for the `Conclusion`
+(see the Lists rule further down) applies here.
 
-Still get listed even without a heading. Since there's no heading to establish "what follows are reasons," this list
-follows the general Lists rule instead of the exception above: end the sentence introducing them with a colon naming
-how to read the list, then give one bullet per reason.
+If a reason itself needs its own justification — a "why" behind that reason — that justification becomes a
+further nested bullet list, one level deeper, directly beneath the reason it justifies. This nesting recurses to
+whatever depth the reasoning chain actually needs: a sub-reason can itself carry a further nested list of its own
+sub-reasons, and so on. A concrete enumeration that supports a reason (e.g. "100 users means 100 queries, 1,000
+means 1,000") becomes a further nested sibling bullet at that same deepest level. As with Step 4's `H6`
+heading-depth caution, this recursive nesting is not unbounded in practice: if staying accurate would require
+nesting implausibly deep, treat that depth as a signal the response is too detailed, and trim content rather than
+nesting the list further.
+
+If any single reason bullet's own content runs long enough to cross the Lists rule's item-length threshold, that
+mechanism takes over for that item exactly as it would for any other list (see "Length threshold within a list"
+further down) — nest the resulting per-item heading one level deeper than whatever heading already contains this
+reason list.
+
+For example:
+
+```markdown
+このコードはいわゆる「N+1問題」に該当します
+
+- 次がレスポンス低下の主な要因になっている可能性が高いです
+  - ユーザー数に比例してデータベースへのクエリ回数が増える構造になっています
+    - 次の回数のクエリが発行されます:
+      - ユーザーが100人いれば100回
+      - 1000人いれば1000回
+    - ループの各回で Order.objects.filter(...).count() を実行しているため
+```
+
+The top-level `Conclusion` sentence — `このコードはいわゆる「N+1問題」に該当します` — is the only plain, unbulleted line in this
+passage; everything else, however deep, is part of the reason's nested list.
 
 ## Lists (applies throughout)
 
@@ -520,6 +584,42 @@ the past year.
 Running the linter catches style issues before they reach review.
 ```
 
+**Exception for the `Conclusion` sentence.** Per Step 6, the nested list that renders a block's reason beneath its
+`Conclusion` does not need this colon-terminated lead-in. The `Conclusion` sentence already establishes, by its
+role and position, that a justification follows — the same way a `Stage` or `Block` heading already establishes
+what a list beneath it is about (Headed lists rule, further down). This is the only exception to the lead-in
+requirement above.
+
+## Headed lists (applies throughout)
+
+This rule is not tied to any single step above — apply it wherever Step 4 gives a `Stage` or `Block` its own
+heading. Whatever content sits directly under that heading renders as a nested list per the Lists rule above,
+never as a bare prose paragraph — a fenced code block, a Markdown table, or a diagram may still appear as the
+content of a list item without itself being broken into further bullets, exactly as the Lists rule already allows
+for a list item's own content. Step 6 already makes a block's own reason render as a nested list unconditionally,
+heading or no heading; what this section adds is specific to the heading case: how a stage's abstract and
+concrete blocks combine into one list when they share a single heading, the `Conclusion`'s role as that list's
+lead-in, and `Lone-item promotion` for a lone surviving block or half.
+
+The `Conclusion` half is the one part of this content that never becomes a list item itself. Per Step 3, it always
+states its own distinct claim first, so wherever it sits directly under a heading it serves as that list's plain
+lead-in — introducing whatever list follows it — rather than an item competing with what follows it; per the
+Lists rule's carve-out, this lead-in needs no colon of its own.
+
+When a stage's abstract and concrete blocks share a single heading (check 2's below-threshold case), the two
+blocks form that heading's own list: one item per block, each item being that block's own conclusion followed by
+its own reason list per Step 6. Apply `Lone-item promotion` whenever a stage or block heading would otherwise
+contain exactly one block, or one level down exactly one half, and nothing beside it:
+
+- A stage heading or a block heading is a neutral topic label with no claim of its own (Step 5) — so when only
+  one block, or one level down only one half, survives under it, that survivor's conclusion is written into the
+  heading's own text instead of appearing as a lead-in sentence beneath it, and whatever reason content the
+  survivor has becomes that heading's own list in its place.
+
+`Lone-item promotion` never manufactures a list where none is needed: once the lone item's own statement has moved
+up, only its children — if it has any — still need a list of their own, nested at this level in its place; with
+no children, nothing further renders below the heading.
+
 ## Mood (applies throughout)
 
 This rule is not tied to any single step above — apply it wherever a sentence gets phrased, in the output of
@@ -537,3 +637,71 @@ Good:
 ```markdown
 Running the tests before merging catches regressions early.
 ```
+
+## Trailing-summary words (applies throughout)
+
+This rule is not tied to any single step above — apply it wherever a `Trailing-summary word` shows up in the
+response, in the output of any step. Step 3 requires each block's conclusion to land first; a `Trailing-summary
+word` appearing at the end of a paragraph or list item, or at the end of the whole response, is the surface signal
+that Step 3 didn't happen there — that the response built up through reasoning and only landed the point at the
+end, the same failure Step 3 already calls out for a trailing "so ...".
+
+`Trailing-summary word`s split into two roles:
+
+- Paraphrasing the point just made
+- Wrapping up the whole passage in one line
+
+### Paraphrasing the point just made
+
+Representative English forms of this role include the following:
+
+- in other words
+- that is / that is to say
+- which means / this means
+- i.e.
+- put simply / simply put
+
+### Wrapping up the whole passage in one line
+
+Forms that condense or restate the passage:
+
+- in short
+- in summary / to summarize
+- ultimately
+- the bottom line is
+- essentially / basically
+- at the end of the day
+- all in all
+
+Forms that introduce a conclusion drawn from the reasoning just stated (e.g. a trailing "so ..." per
+Step 3):
+
+- so
+- therefore
+- as a result
+- hence
+- consequently
+- thus
+
+This split is not tied to English — it applies equally to the equivalent phrase in whatever other language the
+response is written in, the same way the `Banned word` definition applies beyond its English spelling, without
+needing its own listed entry here for every language.
+
+Which role applies is judged by function rather than a fixed vocabulary, because the same word — in English or in
+any other language — can serve either role depending on how it is used: it belongs to Paraphrasing only when it
+genuinely restates the same point in different words, and to Wrapping up instead when it condenses or concludes the
+passage in one line, including when it introduces a conclusion drawn from the reasoning just stated (e.g. "so" or
+"therefore"). Which role applies is judged by that function, not by which section the word's translation happens
+to sit in.
+
+Checking a draft against this list works as follows:
+
+- Whether a listed word or phrase sits at the end of a paragraph or list item, or at the end of the whole
+  response — that position, not the word's presence anywhere in the draft, is what signals a Step 3 violation
+  there
+- Whether the sentence carrying it only repeats a point already stated at that block's conclusion — if so, delete
+  the sentence entirely rather than keeping a shortened echo of it
+- Whether the word instead sits mid-sentence, used for a genuine paraphrase — that use is not itself a violation
+  and needs no rewrite; this exemption applies only to the Paraphrasing role, not to the Wrapping up role — a word
+  playing the Wrapping up role is checked by position like any other, regardless of whether its translation into
+  another language also appears in the Paraphrasing section for a separate, genuinely paraphrasing use
