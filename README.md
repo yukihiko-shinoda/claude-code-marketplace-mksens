@@ -8,11 +8,15 @@ This marketplace distributes ready-made Claude Code plugins, so that a project d
 hand-craft its own output style from scratch:
 
 - `document-writing` plugin — adds output styles that keep every Claude Code response in a
-  consistent, structured shape:
+  consistent, structured shape, plus a skill for drafting prose to a stated audience and length
+  budget:
   - `NestedList` — organizes each response into headers, one per main point, with the supporting
     detail rendered as a nested bullet list under each header
   - `FreeToGo` — orders each response along the OATH formula (Oblivious, Apathetic, Thinking,
     Hurting), stating shared context before conclusions, and conclusions before their reasons
+  - `explain` — drafts a topic into real connected prose for a stated audience, sized to a length
+    budget given as seconds/minutes to read or a direct character count, delivered to chat or an
+    output file
 
 ## Quickstart
 
@@ -46,6 +50,14 @@ claude plugin marketplace list
 
 Running the `/config` command inside a Claude Code session and selecting **Output style** opens a
 picker where either `NestedList` or `FreeToGo` can be selected.
+
+### How do I use the `explain` skill?
+
+Invoke it directly inside a Claude Code session:
+
+```console
+/document-writing:explain "<topic>" "<audience>" "<how-long>"
+```
 
 ### How do I remove this marketplace?
 
