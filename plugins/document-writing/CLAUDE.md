@@ -1,0 +1,84 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code when working with the `document-writing` plugin's own
+content, in addition to the marketplace-level guidance in the repository root `CLAUDE.md`.
+
+## The `explain` skill family
+
+`explain` drafts a topic into real connected prose for a stated audience, sized to a length budget
+given as seconds/minutes to read or a direct character count, then delivers it to chat or an output
+file. It does not run alone — it delegates to two subagents for language/budget resolution, to a
+sibling skill for deciding what to cover, and to one of three sibling skills for drafting and
+delivery. The full dependency tree, spanning `skills/`, `agents/`, and `references/`:
+
+```text
+skills/explain
+├── Agent: explain-language-resolver          agents/explain-language-resolver.md
+├── Agent: explain-how-long-converter          agents/explain-how-long-converter.md
+├── Skill: explain-for-stated-audience         skills/explain-for-stated-audience/SKILL.md
+│     ├── references/content-value-vocabulary.md
+│     └── Agent: topic-audience-stage-classifier  agents/oath-formula/topic-audience-stage-classifier.md
+│           ├── agents/oath-formula/references/awareness-stage.md
+│           └── agents/oath-formula/references/owed-terms-output-contract.md
+├── Skill: explain-deliver-chat-strict         skills/explain-deliver-chat-strict/SKILL.md
+├── Skill: explain-deliver-chat                skills/explain-deliver-chat/SKILL.md
+│     └── references/structured-prose-formatting.md
+└── Skill: explain-deliver-file                skills/explain-deliver-file/SKILL.md
+      └── references/structured-prose-formatting.md
+```
+
+`explain` itself picks exactly one of `explain-deliver-chat-strict`, `explain-deliver-chat`, or
+`explain-deliver-file` per invocation (based on whether an output path was given and whether the
+length budget is a hard ceiling or a rough anchor) — the tree above shows all three because any of
+them can be the one actually called.
+
+## Why this content is duplicated rather than shared
+
+`explain-for-stated-audience`, `topic-audience-stage-classifier`, `content-value-vocabulary.md`,
+`awareness-stage.md`, and `owed-terms-output-contract.md` also exist, in their original form, as
+user-level skills/agents/references at `~/.claude/` — used there by other, unrelated skills
+(`update-readme`, `zenn-introduce-solution`, an audience-awareness rule) that this plugin does not
+publish. Anyone installing this plugin from the marketplace has no access to that `~/.claude/`
+content, so the copies under this plugin's own `skills/`, `agents/`, and `references/` are
+self-contained duplicates, not symlinks or shared files. This is a deliberate tradeoff: the plugin
+works standalone for any installer, at the cost that the `~/.claude/` originals and these plugin
+copies can drift apart over time if one side is edited without the other.
+
+## Path conventions
+
+Every file below resolves references to another bundled file via `${CLAUDE_PLUGIN_ROOT}` (e.g.
+`${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`), never a hardcoded `~/.claude/...`
+or absolute path — that env var resolves to this plugin's own installed root regardless of which
+machine or path it was installed to. The one exception is `agents/explain-language-resolver.md`,
+which reads `~/.claude/settings.json`: that file is intentionally not plugin-bundled, since it holds
+the installing user's own global language preference, read as an optional fallback.
+
+`explain-language-resolver.md` and `explain-how-long-converter.md` are kept flat directly under
+`agents/` (not nested) because a plugin agent's invocation name incorporates its subdirectory path
+per Claude Code's own docs on plugin agents (`agents/review/security.md` in plugin `my-plugin`
+registers as `my-plugin:review:security` — unlike user-level or project-level agents, where nesting
+is cosmetic). Nesting either of these two would break the literal `subagent_type: "..."` strings
+`skills/explain/SKILL.md` calls them by.
+
+`topic-audience-stage-classifier.md` is the one exception, deliberately nested under
+`agents/oath-formula/` to mirror its original `~/.claude/agents/oath-formula/` location and to sit
+alongside its own sealed reference files (below). `skills/explain-for-stated-audience/SKILL.md`
+still calls it by the bare `subagent_type: "topic-audience-stage-classifier"`, with no plugin or
+subdirectory prefix. Claude Code's own docs on plugin agents state that nesting under a plugin's
+`agents/` directory folds the subdirectory into the agent's registered name (e.g.
+`agents/review/security.md` in plugin `my-plugin` registers as `my-plugin:review:security`), which
+would suggest a prefix is required here too — but this project already has a working precedent to
+the contrary: `~/.claude/skills/review-audience-coverage/SKILL.md` calls
+`subagent_type: "audience-stage-classifier"` (bare) for an agent that likewise lives nested under
+`~/.claude/agents/oath-formula/`, and that call resolves correctly. The bare name is kept here on the
+strength of that precedent rather than the documented plugin-nesting rule.
+
+`references/` files (plain `Read` targets, never invoked by name) are unaffected by the nesting rule
+above. `awareness-stage.md` and `owed-terms-output-contract.md` live under
+`agents/oath-formula/references/` rather than the top-level `references/`, unlike
+`content-value-vocabulary.md` and `structured-prose-formatting.md`. This mirrors a sealing design
+carried over from the `~/.claude` originals: those two files hold the O/A/T/H stage table and its
+output contract, meant to stay readable only by `topic-audience-stage-classifier` and never by a
+skill. Nesting them inside `agents/oath-formula/` rather than the shared `references/` makes that
+boundary structural — no `skills/` file has a reason to look there — instead of relying on a comment
+to enforce it.
