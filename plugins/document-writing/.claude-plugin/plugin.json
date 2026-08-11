@@ -1,7 +1,7 @@
 {
   "name": "document-writing",
   "displayName": "Document writing",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The Claude Code plugin for document writing.",
   "author": {
     "name": "Yukihiko Shinoda",
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/yukihiko-shinoda/claude-code-marketplace-mksens",
   "repository": "https://github.com/yukihiko-shinoda/claude-code-marketplace-mksens",
   "license": "MIT",
-  "keywords": ["document", "documentation", "explain"]
+  "keywords": ["document", "documentation", "explain", "review", "summarize"]
 }

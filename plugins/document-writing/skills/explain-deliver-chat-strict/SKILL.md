@@ -10,7 +10,7 @@ description: >-
 when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a non-strict, rough-anchor budget (explain-deliver-chat) — each of the 3 sibling
-  case-skills owns exactly one combination, chosen by explain's own Step 4 routing table.
+  case-skills owns exactly one combination, chosen by explain's own Step 3 routing table.
 ---
 
 # Explain Deliver Chat Strict
@@ -34,19 +34,34 @@ Required keys (always present, all already resolved upstream by `explain`):
 
 No `topic` key -- chat delivery renders no heading, so nothing needs it. No `output-path` key --
 this skill only ever delivers to chat. No `strict` key -- it is always `true` here, implied by
-which skill `explain` chose to call. No `debug` key, and none of `language-source`, `typology`,
-`terms`, `excluded-prerequisites`, `stage`, `evidence` -- `explain` renders its own trailing
-`## Debug` section itself, in the same conversation this skill's own reasoning already ran in
-(the `Skill` tool loads this skill's instructions into that same context, not an isolated one),
-using values it already held before calling here plus whatever this skill's own Step 1 reasoning
-already made observable (e.g. a 3-attempt shortfall) -- nothing needs to be reported back through
-a return value or passthrough key.
+which skill `explain` chose to call. None of the following keys are ever passed:
 
-If `language`, `points`, `target`, or `metric` is missing or malformed (e.g. `points` isn't a
-valid JSON array), treat it as an integration bug in the caller, not an ambiguous user input:
-state which key is missing or malformed and stop -- do not guess a default and do not use
-`AskUserQuestion` for it, since this skill's only caller is another skill's own reasoning, never a
-human typing free text directly.
+- `debug`
+- `language-source`
+- `typology`
+- `terms`
+- `excluded_prerequisites`
+- `stage`
+- `evidence`
+
+`explain` renders its own trailing `## Debug` section itself, in the same conversation this
+skill's own reasoning already ran in (the `Skill` tool loads this skill's instructions into that
+same context, not an isolated one), using values it already held before calling here plus whatever
+this skill's own Step 1 reasoning already made observable (e.g. a 3-attempt shortfall) -- nothing
+needs to be reported back through a return value or passthrough key.
+
+If any of the following required keys is missing or malformed (e.g. `points` isn't a valid JSON
+array):
+
+- `language`
+- `points`
+- `target`
+- `metric`
+
+Treat it as an integration bug in the caller, not an ambiguous user input: state which key is
+missing or malformed and stop -- do not guess a default and do not use `AskUserQuestion` for it,
+since this skill's only caller is another skill's own reasoning, never a human typing free text
+directly.
 
 ## Steps
 
@@ -79,11 +94,19 @@ prose.
 
 - Counting and re-shortening (bounded to 3 attempts) is required, not optional -- never deliver
   the first draft without tallying it against `$target` first.
-- The delivered prose must contain zero Markdown syntax -- verify by eye before sending that no
-  headers, emphasis markers, backtick code spans, or links crept in.
+- The delivered prose must contain zero Markdown syntax -- verify by eye before sending that none
+  of the following crept in:
+  - Headers
+  - Emphasis markers
+  - Backtick code spans
+  - Links
 - Never deliver the explanation itself as a bulleted list or outline -- `$points` is only the
   content plan; turning it into real connected prose, in the stated order, is this skill's own
   job.
-- Treat a missing or malformed required key (`language`, `points`, `target`, `metric`) as an
-  integration bug in the caller -- state which key is the problem and stop, rather than guessing a
-  default or asking the human via `AskUserQuestion`.
+- Treat a missing or malformed required key as an integration bug in the caller -- state which key
+  is the problem and stop, rather than guessing a default or asking the human via
+  `AskUserQuestion`. The required keys are:
+  - `language`
+  - `points`
+  - `target`
+  - `metric`

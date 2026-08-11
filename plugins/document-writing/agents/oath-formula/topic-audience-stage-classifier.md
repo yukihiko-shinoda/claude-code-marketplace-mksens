@@ -77,10 +77,9 @@ Debug mode: follow the debug-mode signal rule in
 ## Output contract
 
 Follow the single-result JSON shape in
-`${CLAUDE_PLUGIN_ROOT}/agents/oath-formula/references/owed-terms-output-contract.md` (default
-`{"owed_terms": [...]}`, debug
-mode adds `stage`/`evidence`). This agent has no additional result shape beyond that shared
-contract. For the debug-mode `evidence` text specifically: cite what in the audience description
+`${CLAUDE_PLUGIN_ROOT}/agents/oath-formula/references/owed-terms-output-contract.md` exactly. This
+agent has no additional result shape beyond that shared contract. For the debug-mode `evidence` text
+specifically: cite what in the audience description
 (and topic, if used) drove the verdict, or, on the owed-terms path, what in the audience description
 stated the owed-terms list.
 

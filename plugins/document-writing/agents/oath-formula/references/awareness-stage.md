@@ -1,9 +1,10 @@
 # Awareness Stage (O/A/T/H)
 
-Sealed reference for the `topic-audience-stage-classifier` agent only. Never referenced from
-`skills/` or any other root-context-visible file. By default only `owed_terms` (see "Owed-terms
-derivation" below) is meant to surface upstream; the stage letter and evidence surface only when a
-caller explicitly signals debug mode.
+Sealed reference for the `audience-stage-classifier` and `topic-audience-stage-classifier` agents
+only. Never referenced from `skills/` or any other root-context-visible file
+for why this table lives in its own file. By default only `owed_terms` (see "Owed-terms derivation"
+below) is meant to surface upstream; the stage letter and evidence surface only when a caller
+explicitly signals debug mode.
 
 | Stage | Audience's state | Already aware of | Needs explained next |
 | --- | --- | --- | --- |

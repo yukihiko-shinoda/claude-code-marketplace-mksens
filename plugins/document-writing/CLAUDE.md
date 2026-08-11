@@ -32,26 +32,36 @@ skills/explain
 length budget is a hard ceiling or a rough anchor) — the tree above shows all three because any of
 them can be the one actually called.
 
-## Why this content is duplicated rather than shared
+## The `review-audience-coverage` skill
 
-`explain-for-stated-audience`, `topic-audience-stage-classifier`, `content-value-vocabulary.md`,
-`awareness-stage.md`, and `owed-terms-output-contract.md` also exist, in their original form, as
-user-level skills/agents/references at `~/.claude/` — used there by other, unrelated skills
-(`update-readme`, `zenn-introduce-solution`, an audience-awareness rule) that this plugin does not
-publish. Anyone installing this plugin from the marketplace has no access to that `~/.claude/`
-content, so the copies under this plugin's own `skills/`, `agents/`, and `references/` are
-self-contained duplicates, not symlinks or shared files. This is a deliberate tradeoff: the plugin
-works standalone for any installer, at the cost that the `~/.claude/` originals and these plugin
-copies can drift apart over time if one side is edited without the other.
+`review-audience-coverage` audits an EXISTING document against the audience its own framing implies,
+reporting whether the document's actual content already covers what that reader still needs
+explained. Unlike `explain`, it never drafts new content — it only reads and reports. Its full
+dependency tree:
+
+```text
+skills/review-audience-coverage
+├── Agent: audience-stage-classifier            agents/oath-formula/audience-stage-classifier.md
+│     ├── references/content-value-vocabulary.md
+│     ├── agents/oath-formula/references/awareness-stage.md
+│     └── agents/oath-formula/references/owed-terms-output-contract.md
+├── Agent: review-audience-coverage-reviewer     agents/review-audience-coverage/reviewer.md
+│     └── references/content-value-vocabulary.md
+└── Agent: review-audience-coverage-jargon-checker  agents/review-audience-coverage/jargon-checker.md
+```
+
+## Shared reference file
+
+`references/content-value-vocabulary.md` is shared between the two skill families above — it is not
+duplicated per family, since both `explain-for-stated-audience` and `review-audience-coverage-reviewer`
+read the same top-level copy.
 
 ## Path conventions
 
 Every file below resolves references to another bundled file via `${CLAUDE_PLUGIN_ROOT}` (e.g.
-`${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`), never a hardcoded `~/.claude/...`
-or absolute path — that env var resolves to this plugin's own installed root regardless of which
-machine or path it was installed to. The one exception is `agents/explain-language-resolver.md`,
-which reads `~/.claude/settings.json`: that file is intentionally not plugin-bundled, since it holds
-the installing user's own global language preference, read as an optional fallback.
+`${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`), never a hardcoded absolute path —
+that env var resolves to this plugin's own installed root regardless of which machine or path it was
+installed to.
 
 `explain-language-resolver.md` and `explain-how-long-converter.md` are kept flat directly under
 `agents/` (not nested) because a plugin agent's invocation name incorporates its subdirectory path
@@ -60,25 +70,23 @@ registers as `my-plugin:review:security` — unlike user-level or project-level 
 is cosmetic). Nesting either of these two would break the literal `subagent_type: "..."` strings
 `skills/explain/SKILL.md` calls them by.
 
-`topic-audience-stage-classifier.md` is the one exception, deliberately nested under
-`agents/oath-formula/` to mirror its original `~/.claude/agents/oath-formula/` location and to sit
-alongside its own sealed reference files (below). `skills/explain-for-stated-audience/SKILL.md`
-still calls it by the bare `subagent_type: "topic-audience-stage-classifier"`, with no plugin or
-subdirectory prefix. Claude Code's own docs on plugin agents state that nesting under a plugin's
-`agents/` directory folds the subdirectory into the agent's registered name (e.g.
-`agents/review/security.md` in plugin `my-plugin` registers as `my-plugin:review:security`), which
-would suggest a prefix is required here too — but this project already has a working precedent to
-the contrary: `~/.claude/skills/review-audience-coverage/SKILL.md` calls
-`subagent_type: "audience-stage-classifier"` (bare) for an agent that likewise lives nested under
-`~/.claude/agents/oath-formula/`, and that call resolves correctly. The bare name is kept here on the
-strength of that precedent rather than the documented plugin-nesting rule.
+`topic-audience-stage-classifier.md` is one of several agents deliberately nested under a
+subdirectory — `agents/oath-formula/` here, to sit alongside its own sealed reference files (below);
+likewise `audience-stage-classifier.md` under the same directory, and `reviewer.md`/`jargon-checker.md`
+under `agents/review-audience-coverage/`. `skills/explain-for-stated-audience/SKILL.md` and
+`skills/review-audience-coverage/SKILL.md` still call these by their bare `subagent_type` values (e.g.
+`"topic-audience-stage-classifier"`, `"audience-stage-classifier"`), with no plugin or subdirectory
+prefix. Claude Code's own docs on plugin agents state that nesting under a plugin's `agents/`
+directory folds the subdirectory into the agent's registered name (e.g. `agents/review/security.md`
+in plugin `my-plugin` registers as `my-plugin:review:security`), which would suggest a prefix is
+required here too — but in practice these bare calls resolve correctly, so the bare names are kept
+on the strength of that observed behavior rather than the documented plugin-nesting rule.
 
 `references/` files (plain `Read` targets, never invoked by name) are unaffected by the nesting rule
 above. `awareness-stage.md` and `owed-terms-output-contract.md` live under
 `agents/oath-formula/references/` rather than the top-level `references/`, unlike
-`content-value-vocabulary.md` and `structured-prose-formatting.md`. This mirrors a sealing design
-carried over from the `~/.claude` originals: those two files hold the O/A/T/H stage table and its
-output contract, meant to stay readable only by `topic-audience-stage-classifier` and never by a
-skill. Nesting them inside `agents/oath-formula/` rather than the shared `references/` makes that
-boundary structural — no `skills/` file has a reason to look there — instead of relying on a comment
-to enforce it.
+`content-value-vocabulary.md` and `structured-prose-formatting.md`. Those two files hold the O/A/T/H
+stage table and its output contract, meant to stay readable only by `audience-stage-classifier` and
+`topic-audience-stage-classifier` and never by a skill. Nesting them inside `agents/oath-formula/`
+rather than the shared `references/` makes that boundary structural — no `skills/` file has a reason
+to look there — instead of relying on a comment to enforce it.

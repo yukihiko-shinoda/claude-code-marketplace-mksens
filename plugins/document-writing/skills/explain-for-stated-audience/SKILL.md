@@ -71,9 +71,31 @@ Parse the subagent's JSON response and take `owed_terms` directly -- do not look
 local table; the subagent now computes and returns the owed terms itself from the sealed table in
 its own isolated context.
 
-- Default response shape: `{"owed_terms": [...]}`.
-- With the debug note appended: `{"owed_terms": [...], "stage": "<letter>", "evidence": "<text>"}` --
-  keep `stage` and `evidence` for Step 4's debug output; never surface them outside `--debug`.
+- Default response shape:
+
+  ```json
+  {
+    "owed_terms": [
+      "<term>",
+      ...
+    ]
+  }
+  ```
+
+- With the debug note appended:
+
+  ```json
+  {
+    "owed_terms": [
+      "<term>",
+      ...
+    ],
+    "stage": "<letter>",
+    "evidence": "<text>"
+  }
+  ```
+
+  Keep `stage` and `evidence` for Step 4's debug output; never surface them outside `--debug`.
 
 ### 2. Expand each owed term into topic-specific concrete points
 
@@ -94,7 +116,18 @@ a shell-syntax prerequisite, even to an LPIC holder). Never drop a whole term wh
 
 ### 4. Emit the result
 
-- Default: `{"what_to_explain": [...]}` -- each entry is one surviving concrete sub-point string.
+- Default:
+
+  ```json
+  {
+    "what_to_explain": [
+      "<sub-point>",
+      ...
+    ]
+  }
+  ```
+
+  Each entry is one surviving concrete sub-point string.
 - With `--debug`: also `"terms"` (Step 1's `owed_terms` list), `"excluded_prerequisites"` (dropped
   sub-points, each with a short reason), `"stage"`, and `"evidence"` (the latter two sourced from
   Step 1's debug response).
