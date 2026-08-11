@@ -100,9 +100,34 @@ for actually reading the passage that drives the verdict.
 
 Output exactly one JSON object and nothing else — no prose before or after, no code fence:
 
-- Default: `{"unexplained_terms": [{"term": "<term>", "reason": "<short reason>"}, ...]}` (empty
-  array when nothing is flagged).
-- Debug mode: each entry additionally gets `"excerpt": "<text near first use>"`.
+- Default (empty array when nothing is flagged):
+
+  ```json
+  {
+    "unexplained_terms": [
+      {
+        "term": "<term>",
+        "reason": "<short reason>"
+      },
+      ...
+    ]
+  }
+  ```
+
+- Debug mode: each entry additionally gets `"excerpt"`:
+
+  ```json
+  {
+    "unexplained_terms": [
+      {
+        "term": "<term>",
+        "reason": "<short reason>",
+        "excerpt": "<text near first use>"
+      },
+      ...
+    ]
+  }
+  ```
 
 ## Rules
 

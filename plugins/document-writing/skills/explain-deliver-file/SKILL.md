@@ -14,7 +14,7 @@ allowed-tools:
   - AskUserQuestion
 when_to_use: >-
   Not for chat delivery of any kind (explain-deliver-chat-strict or explain-deliver-chat, chosen
-  by explain's Step 4 table). Unlike those two siblings, the plaintext-only restriction never
+  by explain's Step 3 table). Unlike those two siblings, the plaintext-only restriction never
   applies here — Markdown-file wrapping always governs file output, even when strict is true.
 ---
 
@@ -39,26 +39,52 @@ Required keys (always present, all already resolved upstream by `explain`):
   rough anchor); it never affects Step 2's delivery mechanics or the plaintext restriction, since
   that restriction never applies to file delivery at all.
 
-No `debug` key, and none of `language-source`, `typology`, `terms`, `excluded-prerequisites`,
-`stage`, `evidence` -- `explain` renders its own trailing `## Debug` section itself, using values
-it already held before calling here plus whatever this skill's own Step 1 reasoning already made
-observable (e.g. a 3-attempt shortfall when `strict=true`); nothing debug-related needs to cross
-into this skill's own `args` at all.
+None of the following keys are ever passed:
 
-If `topic`, `output-path`, `language`, `points`, `target`, `metric`, or `strict` is missing or
-malformed (e.g. `points` isn't a valid JSON array), treat it as an integration bug in the caller,
-not an ambiguous user input: state which key is missing or malformed and stop -- do not guess a
-default and do not use `AskUserQuestion` for it, since this skill's only caller is another skill's
-own reasoning, never a human typing free text directly.
+- `debug`
+- `language-source`
+- `typology`
+- `terms`
+- `excluded_prerequisites`
+- `stage`
+- `evidence`
+
+`explain` renders its own trailing `## Debug` section itself, using values it already held before
+calling here plus whatever this skill's own Step 1 reasoning already made observable (e.g. a
+3-attempt shortfall when `strict=true`); nothing debug-related needs to cross into this skill's own
+`args` at all.
+
+If any of the following required keys is missing or malformed (e.g. `points` isn't a valid JSON
+array):
+
+- `topic`
+- `output-path`
+- `language`
+- `points`
+- `target`
+- `metric`
+- `strict`
+
+Treat it as an integration bug in the caller, not an ambiguous user input: state which key is
+missing or malformed and stop -- do not guess a default and do not use `AskUserQuestion` for it,
+since this skill's only caller is another skill's own reasoning, never a human typing free text
+directly.
 
 ## Steps
 
 ### 1. Draft the explanation
 
-Write real, connected prose in `$language` that covers every point in `$points`. The ordering,
-conclusion/reason rendering, heading, mood, and trailing-summary-word rules this drafting must
-follow are defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` -- read it
-there. That file's heading rule starts section headings one level below whatever title heading
+Write real, connected prose in `$language` that covers every point in `$points`. This drafting
+must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`
+-- read it there, covering all of the following:
+
+- Ordering
+- Conclusion/reason rendering
+- Heading
+- Mood
+- Trailing-summary-word
+
+That file's heading rule starts section headings one level below whatever title heading
 already wraps the whole response -- here that is Step 2's `# $topic` heading, so section headings
 inside the file start at `##`.
 
@@ -96,8 +122,20 @@ inside the file start at `##`.
   never applies here, regardless of `$strict` -- file delivery always wraps the prose as Markdown
   under a `# $topic` heading.
 - Follow `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` for how a point's
-  conclusion, reason, headings, mood, and trailing words must render -- `$points` is only the
-  content plan; turning it into real connected prose with that shape is this skill's own job.
-- Treat a missing or malformed required key (`topic`, `output-path`, `language`, `points`,
-  `target`, `metric`, `strict`) as an integration bug in the caller -- state which key is the
-  problem and stop, rather than guessing a default or asking the human via `AskUserQuestion`.
+  rendering must handle all of the following -- `$points` is only the content plan; turning it into
+  real connected prose with that shape is this skill's own job:
+  - Conclusion
+  - Reason
+  - Headings
+  - Mood
+  - Trailing words
+- Treat a missing or malformed required key as an integration bug in the caller -- state which key
+  is the problem and stop, rather than guessing a default or asking the human via
+  `AskUserQuestion`. The required keys are:
+  - `topic`
+  - `output-path`
+  - `language`
+  - `points`
+  - `target`
+  - `metric`
+  - `strict`

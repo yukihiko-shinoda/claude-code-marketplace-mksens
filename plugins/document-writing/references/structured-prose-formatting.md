@@ -36,11 +36,19 @@ whole response under its own top-level heading, section headings start one level
 wrapper. Both of this file's current callers converge on `##` as the starting level either way.
 
 Word each heading as a neutral label naming that section's own content (e.g. "Dockerのレイヤーの仕組み").
-Never use a heading that only names a structural role instead of content -- e.g. a local-language
-equivalent of "conclusion," "reason," "summary," "overview," "abstract," or "concrete" -- since
-that would announce the response's own structure to the reader instead of what the section is
-about. Adding headings never changes the conclusion-then-nested-reason shape above -- it only
-wraps that same shape in labeled sections once there's enough of it to need them.
+Never use a heading that only names a structural role instead of content -- since that would
+announce the response's own structure to the reader instead of what the section is about.
+Forbidden examples include a local-language equivalent of any of the following:
+
+- "conclusion"
+- "reason"
+- "summary"
+- "overview"
+- "abstract"
+- "concrete"
+
+Adding headings never changes the conclusion-then-nested-reason shape above -- it only wraps that
+same shape in labeled sections once there's enough of it to need them.
 
 ## Mood
 
@@ -50,9 +58,15 @@ instruct the reader to do something.
 
 ## Trailing-summary words
 
-Never end a paragraph, a bullet item, or the response itself on a word that merely paraphrases or
-wraps up what was just said (e.g. a local-language equivalent of "in other words," "in short," "to
-summarize," "therefore," "so," "as a result"). Landing one of those at the end of a passage is a
+Never end any of the following on a word that merely paraphrases or wraps up what was just said
+(e.g. a local-language equivalent of "in other words," "in short," "to summarize," "therefore,"
+"so," "as a result"):
+
+- A paragraph
+- A bullet item
+- The response itself
+
+Landing one of those at the end of a passage is a
 sign that the conclusion-first ordering above didn't actually happen there -- move the point it's
 restating to the front of that passage instead, and delete the trailing word once it no longer
 restates anything.

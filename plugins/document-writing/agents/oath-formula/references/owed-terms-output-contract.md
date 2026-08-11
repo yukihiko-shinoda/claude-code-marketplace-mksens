@@ -16,8 +16,29 @@ append this text.
 
 Output exactly one JSON object and nothing else — no prose before or after, no code fence:
 
-- Default: `{"owed_terms": ["<term>", ...]}`
-- Debug mode: `{"owed_terms": ["<term>", ...], "stage": "<O|A|T|H>", "evidence": "<text>"}`
+- Default:
+
+  ```json
+  {
+    "owed_terms": [
+      "<term>",
+      ...
+    ]
+  }
+  ```
+
+- Debug mode:
+
+  ```json
+  {
+    "owed_terms": [
+      "<term>",
+      ...
+    ],
+    "stage": "<O|A|T|H>",
+    "evidence": "<text>"
+  }
+  ```
 
 The raw stage letter and evidence text must never appear anywhere in the output unless debug mode was
 explicitly signaled per the rule above — this is the whole point of sealing `awareness-stage.md`.

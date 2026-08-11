@@ -79,9 +79,36 @@ For each term in `owed_terms`, in order:
 
 Output exactly one JSON object and nothing else — no prose before or after, no code fence:
 
-- Default: `{"coverage": [{"term": "<Term>", "status": "covered|partial|missing", "reason": "<short reason>"}, ...]}`,
-  one entry per term in `owed_terms`, in the same order given.
-- Debug mode: each entry additionally gets `"evidence": "<text>"`.
+- Default, one entry per term in `owed_terms`, in the same order given:
+
+  ```json
+  {
+    "coverage": [
+      {
+        "term": "<Term>",
+        "status": "covered|partial|missing",
+        "reason": "<short reason>"
+      },
+      ...
+    ]
+  }
+  ```
+
+- Debug mode: each entry additionally gets `"evidence"`:
+
+  ```json
+  {
+    "coverage": [
+      {
+        "term": "<Term>",
+        "status": "covered|partial|missing",
+        "reason": "<short reason>",
+        "evidence": "<text>"
+      },
+      ...
+    ]
+  }
+  ```
 
 ## Rules
 

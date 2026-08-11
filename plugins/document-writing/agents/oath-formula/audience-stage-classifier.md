@@ -86,9 +86,14 @@ clarification:
 - **A directory path.** Use Glob to find the candidate markdown/text file(s) inside it (README.md,
   the sole `*.md`/`*.txt` file, or whatever the invocation names). If more than one plausible
   candidate exists and the invocation didn't disambiguate, classify each one separately and report
-  one array entry per file (see "Output contract" below).
+  one array entry per file (see "Output contract" below). If exactly one candidate resolves, classify
+  it and report the single-result shape with the resolved file's `path` included (see "Output
+  contract" below).
 - **Pasted text inline in the prompt**, instead of a path. Classify it directly — do not attempt to
   Read or Glob anything in this case.
+
+Track which of the file-path or pasted-text case above you were given — you'll report it back as
+`input_kind` in the Output contract below, rather than making the calling process re-derive it.
 
 Grep is available as a navigation aid for long files (e.g. jumping to a transcript's non-assistant
 turns) before reading the relevant passage in full — use it to find where to look, not as a
@@ -99,19 +104,111 @@ substitute for actually reading the passage that drives the verdict.
 
 ## Output contract
 
-Follow the single-result JSON shape in
-`${CLAUDE_PLUGIN_ROOT}/agents/oath-formula/references/owed-terms-output-contract.md` (default
-`{"owed_terms": [...]}`, debug
-mode adds `stage`/`evidence`) for a single-file input (a file path, pasted text, or a directory that
-resolved to exactly one candidate file).
+For a **file path** or **pasted text** input, apply the shared contract's default/debug split from
+`${CLAUDE_PLUGIN_ROOT}/agents/oath-formula/references/owed-terms-output-contract.md`, plus one
+additional field naming which of the two you were given:
 
-This agent has one additional shape beyond that shared contract: for **directory input with more
-than one plausible candidate file**, wrap one entry per file classified, in the order found, no
-single combined verdict, applying the same default/debug split per entry:
+Default:
 
-- Default: `{"files": [{"path": "<path>", "owed_terms": ["<term>", ...]}, ...]}`
-- Debug mode: `{"files": [{"path": "<path>", "owed_terms": ["<term>", ...], "stage": "<letter>",
-  "evidence": "<text>"}, ...]}`
+```json
+{
+  "owed_terms": [
+    "<term>",
+    ...
+  ],
+  "input_kind": "path" | "text"
+}
+```
+
+Debug mode:
+
+```json
+{
+  "owed_terms": [
+    "<term>",
+    ...
+  ],
+  "stage": "<letter>",
+  "evidence": "<text>",
+  "input_kind": "path" | "text"
+}
+```
+
+Set `input_kind` to `"path"` when the invocation gave you a file path (the case where you Read the
+target directly), or `"text"` when it gave you pasted text (the case where you classified inline
+content without Reading anything) — this is the same distinction "Input contract" above already asks
+you to track; report it here rather than re-deriving it.
+
+This agent has two additional shapes beyond that shared contract, both for directory input, each
+applying the shared contract's default/debug split:
+
+- **Directory that resolved to exactly one candidate file.** Same single-result shape, plus a `path`
+  field naming the resolved file:
+
+  Default:
+
+  ```json
+  {
+    "owed_terms": [
+      "<term>",
+      ...
+    ],
+    "path": "<path>"
+  }
+  ```
+
+  Debug mode:
+
+  ```json
+  {
+    "owed_terms": [
+      "<term>",
+      ...
+    ],
+    "stage": "<letter>",
+    "evidence": "<text>",
+    "path": "<path>"
+  }
+  ```
+
+- **Directory with more than one plausible candidate file.** One entry per file classified, in the
+  order found, no single combined verdict:
+
+  Default:
+
+  ```json
+  {
+    "files": [
+      {
+        "path": "<path>",
+        "owed_terms": [
+          "<term>",
+          ...
+        ]
+      },
+      ...
+    ]
+  }
+  ```
+
+  Debug mode:
+
+  ```json
+  {
+    "files": [
+      {
+        "path": "<path>",
+        "owed_terms": [
+          "<term>",
+          ...
+        ],
+        "stage": "<letter>",
+        "evidence": "<text>"
+      },
+      ...
+    ]
+  }
+  ```
 
 Rules:
 

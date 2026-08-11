@@ -21,9 +21,15 @@ means stating the audience's `Concerns`. `Concerns` takes several concrete kinds
 | `Solution` | The technically correct answer, fix, or recommendation |
 | `Conviction` | Confidence to commit to `Solution` now, built via evidence, precedent, transparency |
 
-`Issue`, `Cause`, and `Solution` form a chain. `Stakes` sits outside that chain, naming the cost of
-leaving the `Issue` unresolved. `Conviction` sits outside the chain too, at the opposite end,
-building confidence that acting on `Solution` now is safe, via:
+The following three terms form a chain, in order:
+
+- `Issue`
+- `Cause`
+- `Solution`
+
+`Stakes` sits outside that chain, naming the cost of leaving the `Issue` unresolved. `Conviction`
+sits outside the chain too, at the opposite end, building confidence that acting on `Solution` now
+is safe, via:
 
 | Mechanism | Description |
 | --- | --- |

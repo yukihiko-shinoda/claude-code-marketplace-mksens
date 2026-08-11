@@ -29,8 +29,15 @@ conversation context before invoking you, or an empty string if it found none).
      recognizable full language name, map it via `{"japanese": "ja", "english": "en"}` (extend this
      table only if a genuinely new case is encountered, don't pre-build a large one).
    - If normalization succeeds, return it immediately with source `"flag"`. Skip steps 2-3.
-   - If the value is not a plausible code or recognizable name, report
-     `{"error": "invalid -l value: <value>"}` and stop -- never guess a replacement.
+   - If the value is not a plausible code or recognizable name, report the error shape and stop --
+     never guess a replacement:
+
+     ```json
+     {
+       "error": "invalid -l value: <value>"
+     }
+     ```
+
 2. Otherwise, if `ambient-language` is non-empty after trimming, normalize it through the same table
    as step 1 and return it with source `"settings"`. If `ambient-language` is empty, continue to
    step 3.
@@ -41,5 +48,19 @@ conversation context before invoking you, or an empty string if it found none).
 
 Output exactly one JSON object and nothing else -- no prose before or after, no code fence:
 
-- `{"language": "<ISO 639-1 code>", "source": "flag"|"settings"|"detected"}`
-- `{"error": "<message>"}` (step 1 only, invalid `-l` input)
+- Success:
+
+  ```json
+  {
+    "language": "<ISO 639-1 code>",
+    "source": "flag"|"settings"|"detected"
+  }
+  ```
+
+- Error (step 1 only, invalid `-l` input):
+
+  ```json
+  {
+    "error": "<message>"
+  }
+  ```

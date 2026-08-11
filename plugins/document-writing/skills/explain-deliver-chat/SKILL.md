@@ -10,7 +10,7 @@ when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a strict, hard-ceiling budget with its plaintext-only restriction
   (explain-deliver-chat-strict) — each of the 3 sibling case-skills owns exactly one combination,
-  chosen by explain's own Step 4 routing table.
+  chosen by explain's own Step 3 routing table.
 ---
 
 # Explain Deliver Chat
@@ -39,20 +39,32 @@ chose to call. No `debug` key, and none of the debug-only values -- `explain` re
 trailing `## Debug` section itself, using values it already held before calling here; nothing
 debug-related needs to cross into this skill's own `args` at all.
 
-If `language`, `points`, `target`, or `metric` is missing or malformed (e.g. `points` isn't a
-valid JSON array), treat it as an integration bug in the caller, not an ambiguous user input:
-state which key is missing or malformed and stop -- do not guess a default and do not use
-`AskUserQuestion` for it, since this skill's only caller is another skill's own reasoning, never a
-human typing free text directly.
+If any of the following required keys is missing or malformed (e.g. `points` isn't a valid JSON
+array):
+
+- `language`
+- `points`
+- `target`
+- `metric`
+
+Treat it as an integration bug in the caller, not an ambiguous user input: state which key is
+missing or malformed and stop -- do not guess a default and do not use `AskUserQuestion` for it,
+since this skill's only caller is another skill's own reasoning, never a human typing free text
+directly.
 
 ## Steps
 
 ### 1. Draft the explanation
 
-Write real, connected prose in `$language` that covers every point in `$points`. The ordering,
-conclusion/reason rendering, heading, mood, and trailing-summary-word rules this drafting must
-follow are defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` -- read it
-there.
+Write real, connected prose in `$language` that covers every point in `$points`. This drafting
+must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`
+-- read it there, covering all of the following:
+
+- Ordering
+- Conclusion/reason rendering
+- Heading
+- Mood
+- Trailing-summary-word
 
 Treat `$target` as a rough anchor judged by eye. Draft once -- a result landing a little outside
 `$target` either way is not a defect and does not need a rewrite.
@@ -67,8 +79,17 @@ Render the drafted prose directly as this skill's chat response.
   file's heading-length anchor, and never re-draft solely for landing a little outside either one
   -- both are approximate anchors, not an exact tally.
 - Follow `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` for how a point's
-  conclusion, reason, headings, mood, and trailing words must render -- `$points` is only the
-  content plan; turning it into real connected prose with that shape is this skill's own job.
-- Treat a missing or malformed required key (`language`, `points`, `target`, `metric`) as an
-  integration bug in the caller -- state which key is the problem and stop, rather than guessing a
-  default or asking the human via `AskUserQuestion`.
+  rendering must handle all of the following -- `$points` is only the content plan; turning it into
+  real connected prose with that shape is this skill's own job:
+  - Conclusion
+  - Reason
+  - Headings
+  - Mood
+  - Trailing words
+- Treat a missing or malformed required key as an integration bug in the caller -- state which key
+  is the problem and stop, rather than guessing a default or asking the human via
+  `AskUserQuestion`. The required keys are:
+  - `language`
+  - `points`
+  - `target`
+  - `metric`
