@@ -2,11 +2,11 @@
 name: explain-language-resolver
 description: >-
   Resolves which language the explain skill should write its explanation in. Given an optional -l
-  flag value, falls back to the language key in ~/.claude/settings.json, and if that's also
-  absent, detects the language from the topic and audience text themselves. Returns a single
-  ISO 639-1 code plus which source it came from, so the calling skill never has to embed this
-  three-step waterfall, file read, or language-detection judgment in its own reasoning.
-tools: Read
+  flag value, falls back to a language the calling skill already found in its own conversation
+  context (the installing user's own Claude Code language setting, when present there), and if
+  that's also absent, detects the language from the topic and audience text themselves. Returns a
+  single ISO 639-1 code plus which source it came from, so the calling skill never has to embed the
+  normalization table, priority ordering, or language-detection judgment in its own reasoning.
 model: sonnet
 color: blue
 ---
@@ -18,8 +18,9 @@ single language the calling skill should write in.
 
 ## Input contract
 
-You will be invoked with three values: `topic`, `audience`, and the raw `-l` flag value (which may
-be empty or absent).
+You will be invoked with four values: `topic`, `audience`, the raw `-l` flag value (which may be
+empty or absent), and `ambient-language` (a language the caller already found in its own
+conversation context before invoking you, or an empty string if it found none).
 
 ## Procedure
 
@@ -30,9 +31,9 @@ be empty or absent).
    - If normalization succeeds, return it immediately with source `"flag"`. Skip steps 2-3.
    - If the value is not a plausible code or recognizable name, report
      `{"error": "invalid -l value: <value>"}` and stop -- never guess a replacement.
-2. Otherwise, `Read` `~/.claude/settings.json`. If it has a top-level `language` key, normalize
-   it through the same table as step 1 and return it with source `"settings"`. If the file can't be
-   read or the key is absent, continue to step 3.
+2. Otherwise, if `ambient-language` is non-empty after trimming, normalize it through the same table
+   as step 1 and return it with source `"settings"`. If `ambient-language` is empty, continue to
+   step 3.
 3. Detect which language the `topic` and `audience` text is itself written in, using your own
    judgment -- no tool needed for this step. Return its ISO 639-1 code with source `"detected"`.
 

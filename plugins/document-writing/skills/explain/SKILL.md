@@ -50,9 +50,12 @@ appended after the third positional.
 
 ### 1. Resolve the output language
 
-Call `Agent` with `subagent_type: "explain-language-resolver"`, passing `$topic`, `$audience`, and
-`$language-flag` (empty string if `-l` wasn't given). If the response is `{"error": ...}`, use
-`AskUserQuestion` to ask for a valid `-l` value instead of guessing. Otherwise keep
+Before calling the subagent, check whether this conversation's own system prompt already states a
+language to respond in (e.g. a section such as "# Language" naming one) -- if so, keep that
+language as `$ambient-language`; otherwise use an empty string. Call `Agent` with
+`subagent_type: "explain-language-resolver"`, passing `$topic`, `$audience`, `$language-flag`
+(empty string if `-l` wasn't given), and `$ambient-language`. If the response is `{"error": ...}`,
+use `AskUserQuestion` to ask for a valid `-l` value instead of guessing. Otherwise keep
 `$resolved-language` and `$language-source` from the response.
 
 ### 2. Convert the how-long budget
@@ -140,7 +143,10 @@ the drafted prose, or a file-write report) containing:
   output language, convert the how-long budget, or draft/deliver the explanation itself in this
   skill's own reasoning -- each of those is delegated whole to its own subagent or skill
   (Steps 1-4); this skill's own job is only to resolve arguments, run those delegations in order,
-  and forward each one's results as the next one's inputs.
+  and forward each one's results as the next one's inputs. The one narrow exception is Step 1's own
+  `$ambient-language` check -- noticing whether this conversation's own system prompt already states
+  a language is not the same judgment as resolving the final output language, which still always
+  goes through `explain-language-resolver`.
 - Never guess which of the 3 case-skills to route to in Step 4 -- always use the deterministic
   table (output-path presence first, then `$strict`); the 3 cases are exhaustive and mutually
   exclusive, so exactly one always applies.

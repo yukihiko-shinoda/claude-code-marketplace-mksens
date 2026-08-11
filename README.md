@@ -8,8 +8,8 @@ This marketplace distributes ready-made Claude Code plugins, so that a project d
 hand-craft its own output style from scratch:
 
 - `document-writing` plugin — adds output styles that keep every Claude Code response in a
-  consistent, structured shape, plus a skill for drafting prose to a stated audience and length
-  budget:
+  consistent, structured shape, plus skills for drafting prose to a stated audience and length
+  budget and for reviewing an existing document's audience coverage:
   - `NestedList` — organizes each response into headers, one per main point, with the supporting
     detail rendered as a nested bullet list under each header
   - `FreeToGo` — orders each response along the OATH formula (Oblivious, Apathetic, Thinking,
@@ -17,6 +17,9 @@ hand-craft its own output style from scratch:
   - `explain` — drafts a topic into real connected prose for a stated audience, sized to a length
     budget given as seconds/minutes to read or a direct character count, delivered to chat or an
     output file
+  - `review-audience-coverage` — reviews an existing document against the audience its own framing
+    implies, checking whether owed content-value terms are covered and whether domain-specific
+    jargon is adequately explained
 
 ## Quickstart
 
@@ -57,6 +60,14 @@ Invoke it directly inside a Claude Code session:
 
 ```console
 /document-writing:explain "<topic>" "<audience>" "<how-long>"
+```
+
+### How do I use the `review-audience-coverage` skill?
+
+Invoke it directly inside a Claude Code session:
+
+```console
+/document-writing:review-audience-coverage <path-or-text> [--debug]
 ```
 
 ### How do I remove this marketplace?

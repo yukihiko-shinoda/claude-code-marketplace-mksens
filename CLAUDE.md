@@ -65,14 +65,12 @@ registration elsewhere is needed since Claude Code discovers styles by scanning 
 
 ### Skill, agent, and reference files
 
-`plugins/document-writing/skills/`, `agents/`, and `references/` hold the `explain` skill family —
-drafts audience- and length-budget-aware prose, delivered to chat or a Markdown file — plus
-everything it needs to run standalone. A few of those dependencies (`explain-for-stated-audience`,
-`topic-audience-stage-classifier`, and two of the `references/` files) are also used, in their
-original form, by unrelated skills that live outside this marketplace at `~/.claude/skills/`; they
-are deliberately duplicated here rather than shared, so this plugin works for anyone who installs it,
-not only on the machine the skill was authored on — see `plugins/document-writing/CLAUDE.md` for the
-full dependency diagram and rationale. Adding a skill/agent/reference file follows the same
+`plugins/document-writing/skills/`, `agents/`, and `references/` hold two skill families: `explain` —
+drafts audience- and length-budget-aware prose, delivered to chat or a Markdown file — and
+`review-audience-coverage` — audits an existing document against the audience its own framing
+implies — plus everything each needs to run standalone, self-contained within this plugin — see
+`plugins/document-writing/CLAUDE.md` for the full dependency diagram. Adding a
+skill/agent/reference file follows the same
 discovery rule as `output-styles/`: Claude Code scans these directories directly, so no `plugin.json`
 registration is needed. Files that reference another file bundled in the same plugin do so via
 `${CLAUDE_PLUGIN_ROOT}/references/...` rather than a hardcoded path, so the plugin keeps working
