@@ -89,6 +89,9 @@ output:
 - `stage`
 - `evidence`
 
+That skill's JSON-only output is an intermediate result, not this skill's own: continue to Step 3
+in the same turn.
+
 ### 3. Delegate drafting and delivery
 
 Call the `Skill` tool with `$case` as the `skill` name -- never guess or reason about a different
