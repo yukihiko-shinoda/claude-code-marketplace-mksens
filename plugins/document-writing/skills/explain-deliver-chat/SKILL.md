@@ -10,7 +10,7 @@ when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a strict, hard-ceiling budget with its plaintext-only restriction
   (explain-deliver-chat-strict) — each of the 3 sibling case-skills owns exactly one combination,
-  chosen by explain's own Step 3 routing table.
+  chosen by explain's own routing.
 ---
 
 # Explain Deliver Chat
@@ -27,7 +27,7 @@ Required keys (always present, all already resolved upstream by `explain`):
 - `language=<ISO 639-1 code>` -- the language to draft in.
 - `points=<JSON array of strings>` -- the content plan to cover, passed through unchanged.
 - `target=<number>` -- the numeric length target. Here it is always a rough anchor: `explain`
-  only ever calls this skill when its own Step 2 already found `$strict=false`.
+  only ever calls this skill when its own Step 1 already found `$strict=false`.
 - `metric=characters|words`
 
 No `topic` key -- chat delivery never renders a top-level title heading naming the overall topic

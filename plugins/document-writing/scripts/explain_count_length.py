@@ -13,7 +13,9 @@ Usage: explain_count_length.py <characters|words> <target>
 from __future__ import annotations
 
 import json
+import re
 import sys
+from enum import Enum
 from enum import StrEnum
 
 EXPECTED_ARGC = 3
@@ -24,6 +26,25 @@ class Metric(StrEnum):
 
     CHARACTERS = "characters"
     WORDS = "words"
+
+
+class MarkdownSyntax(Enum):
+    """Pair each construct plaintext delivery forbids with a pattern matching what Markdown renders as one."""
+
+    HEADER = ("header", r"^#{1,6}\s")
+    EMPHASIS = ("emphasis", r"(\*{1,3})\S(?:.*?\S)?\1|(?<!\w)(_{1,3})\S(?:.*?\S)?\2(?!\w)")
+    CODE_SPAN = ("code_span", r"`[^`\n]+`")
+    LINK = ("link", r"\[[^\]\n]*\]\([^)\n]*\)")
+
+    def __init__(self, label: str, pattern: str) -> None:
+        """Unpack a member's tuple into named attributes."""
+        self.label = label
+        self.pattern = re.compile(pattern, re.MULTILINE)
+
+    @classmethod
+    def found_in(cls, text: str) -> list[str]:
+        """Return the label of each construct the text contains."""
+        return [syntax.label for syntax in cls if syntax.pattern.search(text)]
 
 
 class DraftLength:
@@ -42,12 +63,13 @@ class DraftLength:
         return len(self.text.split())
 
     def report(self, target: float) -> dict[str, object]:
-        """Return the measured length and whether it fits within the target."""
+        """Return the measured length, whether it fits the target, and any Markdown syntax found."""
         return {
             "length": self.length,
             "metric": self.metric,
             "target": target,
             "within": self.length <= target,
+            "markdown_syntax": MarkdownSyntax.found_in(self.text),
         }
 
 

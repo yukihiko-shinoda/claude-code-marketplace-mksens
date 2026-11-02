@@ -12,7 +12,7 @@ allowed-tools:
 when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a non-strict, rough-anchor budget (explain-deliver-chat) — each of the 3 sibling
-  case-skills owns exactly one combination, chosen by explain's own Step 3 routing table.
+  case-skills owns exactly one combination, chosen by explain's own routing.
 ---
 
 # Explain Deliver Chat Strict
@@ -31,7 +31,7 @@ Required keys (always present, all already resolved upstream by `explain`):
 - `points=<JSON array of strings>` -- the content plan to cover
   (`explain-for-stated-audience`'s `what_to_explain` array), passed through unchanged.
 - `target=<number>` -- the numeric length target. Here it is always a hard ceiling on `$metric`:
-  `explain` only ever calls this skill when its own Step 2 already found `$strict=true`.
+  `explain` only ever calls this skill when its own Step 1 already found `$strict=true`.
 - `metric=characters|words`
 
 No `topic` key -- chat delivery renders no heading, so nothing needs it. No `output-path` key --
@@ -103,9 +103,11 @@ uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py
 EOF
 ```
 
-Its stdout is a JSON object whose `length` is the draft's measured length and whose `within`
-says whether that length fits `$target`. Fall back to counting by explicit tally in this skill's
-own reasoning if the command fails for any of the following reasons:
+Its stdout is a JSON object whose `length` is the draft's measured length, whose `within` says
+whether that length fits `$target`, and whose `markdown_syntax` lists the Markdown constructs found
+in the draft. If that list isn't empty, remove those constructs and recount. Fall back to counting
+by explicit tally in this skill's own reasoning, and to checking for Markdown by eye, if the command
+fails for any of the following reasons:
 
 - `uv` is not installed (e.g. `command not found`)
 - `uv` itself errors before running the script (e.g. it cannot write its temporary files)
@@ -120,8 +122,8 @@ prose.
 
 - Counting and re-shortening (bounded to 3 attempts) is required, not optional -- never deliver
   the first draft without tallying it against `$target` first.
-- The delivered prose must contain zero Markdown syntax -- verify by eye before sending that none
-  of the following crept in:
+- The delivered prose must contain zero Markdown syntax -- confirm through `markdown_syntax` being
+  empty, or by eye when the count fell back to a tally, that none of the following crept in:
   - Headers
   - Emphasis markers
   - Backtick code spans
