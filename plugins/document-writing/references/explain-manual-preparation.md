@@ -22,7 +22,8 @@ than silently ignoring it. If the budget string is empty, ask the user for it in
 
 ## 2. Resolve the output language
 
-Call `Agent` with `subagent_type: "explain-language-resolver"`, passing all of the following:
+Call `Agent` with `subagent_type: "document-writing:explain-language-resolver"`, passing all of the
+following:
 
 - The topic
 - The audience
@@ -42,8 +43,8 @@ uv run --no-cache --script <plugin-root>/scripts/explain_how_long.py "<how-long>
 ```
 
 Use its stdout only when it is a single JSON object. If the command fails, or prints anything else,
-call `Agent` with `subagent_type: "explain-how-long-converter"`, passing the same two values
-instead. Both share one output contract: if the response has `error`, use `AskUserQuestion` to ask
+call `Agent` with `subagent_type: "document-writing:explain-how-long-converter"`, passing the same
+two values instead. Both share one output contract: if the response has `error`, use `AskUserQuestion` to ask
 for a valid budget, showing examples (`30s`, `5m`, `500c`). Otherwise keep all of the following as
 the same-named variables:
 

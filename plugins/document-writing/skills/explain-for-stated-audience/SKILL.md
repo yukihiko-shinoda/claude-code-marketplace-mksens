@@ -62,8 +62,9 @@ splits the raw invocation into the two named arguments by quoted segment, not by
 
 ### 1. Determine the owed abstract terms (stage pass)
 
-Call the `Agent` tool with `subagent_type: "topic-audience-stage-classifier"`, stating both `$topic`
-and `$audience` directly in the prompt (e.g. `Classify the audience awareness stage. Topic: $topic
+Call the `Agent` tool with
+`subagent_type: "document-writing:oath-formula:topic-audience-stage-classifier"`, stating both
+`$topic` and `$audience` directly in the prompt (e.g. `Classify the audience awareness stage. Topic: $topic
 Audience: $audience`). If this skill's own `--debug` was passed, append this exact text to the end
 of that prompt: `(debug mode: also report stage and evidence)`.
 

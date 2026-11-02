@@ -110,24 +110,24 @@ Every file below resolves references to another bundled file via `${CLAUDE_PLUGI
 that env var resolves to this plugin's own installed root regardless of which machine or path it was
 installed to.
 
-`explain-language-resolver.md` and `explain-how-long-converter.md` are kept flat directly under
-`agents/` (not nested) because a plugin agent's invocation name incorporates its subdirectory path
-per Claude Code's own docs on plugin agents (`agents/review/security.md` in plugin `my-plugin`
+A plugin agent's invocation name is its plugin name, then its subdirectory path, then its frontmatter
+`name`: per Claude Code's own docs on plugin agents, `agents/review/security.md` in plugin `my-plugin`
 registers as `my-plugin:review:security` — unlike user-level or project-level agents, where nesting
-is cosmetic). Nesting either of these two would break the literal `subagent_type: "..."` strings
-`references/explain-manual-preparation.md` calls them by.
+is cosmetic. Every `subagent_type` in this plugin uses that full name, as the `Agent` tool lists it:
+`topic-audience-stage-classifier` failed with "Agent type not found" when called bare, though the
+other bare names were not tried. Moving an agent to another directory changes its name, so every
+`subagent_type` calling it must change too.
+
+`explain-language-resolver.md` and `explain-how-long-converter.md` are kept flat directly under
+`agents/`, so `references/explain-manual-preparation.md` calls them as
+`document-writing:explain-language-resolver` and `document-writing:explain-how-long-converter`.
 
 `topic-audience-stage-classifier.md` is one of several agents deliberately nested under a
 subdirectory — `agents/oath-formula/` here, to sit alongside its own sealed reference files (below);
 likewise `audience-stage-classifier.md` under the same directory, and `reviewer.md`/`jargon-checker.md`
 under `agents/review-audience-coverage/`. `skills/explain-for-stated-audience/SKILL.md` and
-`skills/review-audience-coverage/SKILL.md` still call these by their bare `subagent_type` values (e.g.
-`"topic-audience-stage-classifier"`, `"audience-stage-classifier"`), with no plugin or subdirectory
-prefix. Claude Code's own docs on plugin agents state that nesting under a plugin's `agents/`
-directory folds the subdirectory into the agent's registered name (e.g. `agents/review/security.md`
-in plugin `my-plugin` registers as `my-plugin:review:security`), which would suggest a prefix is
-required here too — but in practice these bare calls resolve correctly, so the bare names are kept
-on the strength of that observed behavior rather than the documented plugin-nesting rule.
+`skills/review-audience-coverage/SKILL.md` call these with their subdirectory in the name (e.g.
+`document-writing:oath-formula:topic-audience-stage-classifier`).
 
 `references/` files (plain `Read` targets, never invoked by name) are unaffected by the nesting rule
 above. `awareness-stage.md` and `owed-terms-output-contract.md` live under
