@@ -15,7 +15,7 @@ allowed-tools:
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py *)
 when_to_use: >-
   Not for chat delivery of any kind (explain-deliver-chat-strict or explain-deliver-chat, chosen
-  by explain's Step 3 table). Unlike those two siblings, the plaintext-only restriction never
+  by explain's routing). Unlike those two siblings, the plaintext-only restriction never
   applies here — Markdown-file wrapping always governs file output, even when strict is true.
 ---
 
@@ -39,6 +39,11 @@ Required keys (always present, all already resolved upstream by `explain`):
 - `strict=true|false` -- governs only Step 1's drafting sub-step (hard ceiling with retry vs.
   rough anchor); it never affects Step 2's delivery mechanics or the plaintext restriction, since
   that restriction never applies to file delivery at all.
+
+Optional key:
+
+- `output-action=write|edit` -- present only when `explain_prepare.py` already validated
+  `$output-path` and the user already confirmed any overwrite, so Step 2 skips asking again.
 
 None of the following keys are ever passed:
 
@@ -125,12 +130,14 @@ own reasoning if the command fails for any of the following reasons:
 
 ### 2. Deliver the explanation
 
-1. Validate the extension is `.md` or `.markdown` (case-insensitive). If not, use
-   `AskUserQuestion` to get a corrected path -- never silently rename or add an extension.
+1. Skip this step and step 2 if `$output-action` was passed. Validate the extension is `.md` or
+   `.markdown` (case-insensitive). If not, use `AskUserQuestion` to get a corrected path -- never
+   silently rename or add an extension.
 2. `Glob` the literal `$output-path`. If it matches an existing file, use `AskUserQuestion` to ask
    whether to edit it in place or choose a different path -- never overwrite silently.
-3. `Write` the prose to `$output-path` (or `Edit` it, if the user chose to revise the existing
-   file found in step 2), under a single top-level `# $topic` heading, with the body formatted per
+3. `Write` the prose to `$output-path` (or `Edit` it, if `$output-action` is `edit` or the user
+   chose to revise the existing file found in step 2), under a single top-level `# $topic`
+   heading, with the body formatted per
    `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` as drafted in Step 1.
 4. Report the path written. Any debug output is `explain`'s own concern, rendered in chat after
    this skill's call returns -- never inside the written file itself, and never by this skill.
@@ -138,7 +145,7 @@ own reasoning if the command fails for any of the following reasons:
 ## Guardrails
 
 - Never silently overwrite an existing `$output-path` -- always confirm via `AskUserQuestion`
-  first.
+  first, unless `$output-action` shows `explain` already did.
 - When `$strict` is `false`, never invoke a tool call to count characters or words against
   `$target`, and never re-draft solely for landing a little outside it -- the budget is an
   approximate anchor, not an exact tally. When `$strict` is `true`, counting and re-shortening

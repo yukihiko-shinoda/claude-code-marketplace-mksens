@@ -7,15 +7,19 @@ content, in addition to the marketplace-level guidance in the repository root `C
 
 `explain` drafts a topic into real connected prose for a stated audience, sized to a length budget
 given as seconds/minutes to read or a direct character count, then delivers it to chat or an output
-file. It does not run alone — it delegates to two subagents for language/budget resolution, to a
-sibling skill for deciding what to cover, and to one of three sibling skills for drafting and
-delivery. The full dependency tree, spanning `skills/`, `agents/`, and `references/`:
+file. It does not run alone — it delegates to a script for its deterministic preparation (with a
+reference file as the fallback), to a sibling skill for deciding what to cover, and to one of three
+sibling skills for drafting and delivery. The full dependency tree, spanning `skills/`, `agents/`,
+and `references/`:
 
 ```text
 skills/explain
-├── Agent: explain-language-resolver          agents/explain-language-resolver.md
-├── Script: explain_how_long.py                scripts/explain_how_long.py
-│     └── (fallback) Agent: explain-how-long-converter  agents/explain-how-long-converter.md
+├── Script: explain_prepare.py                 scripts/explain_prepare.py
+│     └── (imports) explain_how_long.py
+├── (fallback) references/explain-manual-preparation.md
+│     ├── Agent: explain-language-resolver     agents/explain-language-resolver.md
+│     └── Script: explain_how_long.py          scripts/explain_how_long.py
+│           └── (fallback) Agent: explain-how-long-converter  agents/explain-how-long-converter.md
 ├── Skill: explain-for-stated-audience         skills/explain-for-stated-audience/SKILL.md
 │     ├── references/content-value-vocabulary.md
 │     └── Agent: topic-audience-stage-classifier  agents/oath-formula/topic-audience-stage-classifier.md
@@ -42,8 +46,27 @@ as its fallback, used whenever the command fails or prints something other than 
 
 | Script | Replaces | Fallback |
 | --- | --- | --- |
+| `explain_prepare.py` | `explain`'s deterministic preparation, listed below | `explain-manual-preparation.md` |
 | `explain_how_long.py` | The `explain-how-long-converter` agent | That same agent |
-| `explain_count_length.py` | The strict-mode "explicit tally" of a draft's length | Tallying by the skill itself |
+| `explain_count_length.py` | The strict-mode length tally and by-eye Markdown check | Both by the skill itself |
+
+`explain_prepare.py` covers all of the following:
+
+- Flag extraction
+- Language normalization
+- Budget conversion
+- Output path check
+- Routing
+
+`explain_prepare.py` handles only what needs no judgment: a language it can't normalize, or one that
+would need detecting from the text, makes it report `needs_language_agent`, which sends `explain`
+through that same fallback. It imports from `explain_how_long.py`, so the two always ship together
+and convert a budget the same way.
+
+`references/explain-manual-preparation.md` stays out of `skills/explain/SKILL.md` so that a run the
+script completes never loads it. A file read this way gets no `${CLAUDE_PLUGIN_ROOT}` substitution,
+so it says `<plugin-root>` and `SKILL.md` states what that means. Its result must keep setting the
+same variables as the script's success shape, whose keys match those variable names.
 
 `explain_how_long.py` must keep the same JSON output contract as `explain-how-long-converter`,
 since `skills/explain` reads either one's response the same way. The one intentional difference is
@@ -92,7 +115,7 @@ installed to.
 per Claude Code's own docs on plugin agents (`agents/review/security.md` in plugin `my-plugin`
 registers as `my-plugin:review:security` — unlike user-level or project-level agents, where nesting
 is cosmetic). Nesting either of these two would break the literal `subagent_type: "..."` strings
-`skills/explain/SKILL.md` calls them by.
+`references/explain-manual-preparation.md` calls them by.
 
 `topic-audience-stage-classifier.md` is one of several agents deliberately nested under a
 subdirectory — `agents/oath-formula/` here, to sit alongside its own sealed reference files (below);
