@@ -29,7 +29,8 @@ from explain_how_long import emit
 
 EXPECTED_ARGC = 2
 BUDGET_EXAMPLES = "e.g. 30s, 5m, 500c"
-LANGUAGE_CODE = re.compile(r"[a-z]{2}")
+# Deliberately not a full ISO 639-1 list: it would dwarf this script and need its own upkeep, while every language
+# missing here still resolves through explain-language-resolver, only more slowly.
 # Extend only when a genuinely new case is encountered, as explain-language-resolver's own table does.
 LANGUAGE_NAMES = {"japanese": "ja", "english": "en"}
 MARKDOWN_SUFFIXES = frozenset({".md", ".markdown"})
@@ -50,7 +51,7 @@ class ResolvedLanguage:
     def normalize(value: str) -> str | None:
         """Return the code for a language code or known name, or None if it's neither."""
         language = value.strip().lower()
-        return language if LANGUAGE_CODE.fullmatch(language) else LANGUAGE_NAMES.get(language)
+        return language if language in LANGUAGE_NAMES.values() else LANGUAGE_NAMES.get(language)
 
     @classmethod
     def resolve(cls, language_flag: str, ambient_language: str) -> ResolvedLanguage | None:
