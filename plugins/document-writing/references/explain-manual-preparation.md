@@ -15,7 +15,8 @@ to each other:
 - `-o` followed by whitespace and either a double-quoted string or the next whitespace-delimited
   token -- strip both, keep the value as `$output-path`.
 
-Then trim whatever remains -- that is the literal how-long budget string (e.g. `5m`). If a
+Then trim whatever remains, along with any double quotes around it -- that is the literal how-long
+budget string (e.g. `5m`). If a
 `-`-prefixed token remains that matched none of the three flags, ask the user to clarify it rather
 than silently ignoring it. If the budget string is empty, ask the user for it instead of guessing.
 

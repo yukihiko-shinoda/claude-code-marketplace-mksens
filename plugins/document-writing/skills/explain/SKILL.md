@@ -9,7 +9,7 @@ description: >-
   three case-skills -- explain-deliver-chat-strict, explain-deliver-chat, or explain-deliver-file
   -- to draft and deliver the prose, and renders its own trailing debug section.
 argument-hint: '"<topic>" "<audience>" "<how-long>" [-o <path>] [-l <language>] [--debug]'
-arguments: [topic, audience, how-long]
+arguments: [topic, audience]
 allowed-tools:
   - Agent
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py *)
@@ -36,8 +36,12 @@ arguments by quoted segment, not by whitespace alone:
 - `$audience`
 - `$how-long`
 
-The three trailing flags are documented only in `argument-hint`, not in `arguments` -- they arrive
-as raw text appended after the third positional.
+Only the topic and the audience are named in `arguments`. The how-long budget and the three
+trailing flags are read from the full invocation, exactly as typed:
+
+```text
+$ARGUMENTS
+```
 
 If `$topic` or `$audience` is empty, ask the user for the missing piece(s) instead of guessing --
 never assume a default topic or audience.
@@ -48,8 +52,8 @@ never assume a default topic or audience.
 
 Check whether this conversation's own system prompt already states a language to respond in (e.g.
 a section such as "# Language" naming one) -- if so, keep that language as `$ambient-language`;
-otherwise use an empty string. Then run the bundled script, piping the raw text bound to
-`$how-long`, flags included, through a quoted heredoc:
+otherwise use an empty string. Then run the bundled script, piping everything in the full invocation
+after the second positional, flags included, through a quoted heredoc:
 
 ```bash
 uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py "$ambient-language" <<'EOF'

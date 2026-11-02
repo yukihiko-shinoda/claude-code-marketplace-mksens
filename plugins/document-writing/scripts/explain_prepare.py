@@ -80,7 +80,7 @@ class Arguments:
         while words:
             word = words.popleft()
             if not arguments.consume_flag(word, words):
-                remaining.append(word)
+                remaining.append(word.removeprefix('"').removesuffix('"'))
         unknown = [word for word in remaining if word.startswith("-")]
         if unknown:
             message = f"Unknown flag: {' '.join(unknown)}. What did you mean?"
