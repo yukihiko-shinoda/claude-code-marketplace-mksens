@@ -8,13 +8,13 @@ This marketplace distributes ready-made Claude Code plugins, so that a project d
 hand-craft its own output style from scratch:
 
 - `document-writing` plugin — adds output styles that keep every Claude Code response in a
-  consistent, structured shape, plus skills for drafting prose to a stated audience and length
+  consistent, structured shape, plus skills for drafting explanations to a stated audience and length
   budget and for reviewing an existing document's audience coverage:
   - `NestedList` — organizes each response into headers, one per main point, with the supporting
     detail rendered as a nested bullet list under each header
   - `FreeToGo` — orders each response along the OATH formula (Oblivious, Apathetic, Thinking,
     Hurting), stating shared context before conclusions, and conclusions before their reasons
-  - `explain` — drafts a topic into real connected prose for a stated audience, sized to a length
+  - `explain` — drafts a topic into a real explanation for a stated audience, sized to a length
     budget given as seconds/minutes to read or a direct character count, delivered to chat or an
     output file
   - `review-audience-coverage` — reviews an existing document against the audience its own framing

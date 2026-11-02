@@ -1,7 +1,7 @@
 ---
 name: explain
 description: >-
-  Outputs an actual prose explanation, not a list of bullet points, about a topic for a stated
+  Outputs an actual explanation, not an outline of points to cover, about a topic for a stated
   audience, sized to a length budget given as seconds/minutes to read or a direct character count.
   Delegates argument parsing, language normalization, budget conversion, and routing to a bundled
   Python script (falling back to a prompt-based procedure when uv is unavailable or the language
@@ -126,14 +126,14 @@ None of the 3 case-skills receives any of the following:
 Step 4 below renders this skill's own debug output directly, using values this skill already
 holds, so nothing debug-related needs to cross into any case-skill's own `args` at all.
 
-The chosen case-skill drafts the prose and delivers it (to chat, or to `$output-path` with
+The chosen case-skill drafts the explanation and delivers it (to chat, or to `$output-path` with
 overwrite confirmation). This skill's own job continues only into Step 4 below; there is nothing
 else to render for the delivery itself once the call returns.
 
 ### 4. Render debug output
 
 Only when this skill's own debug mode is on (Step 1). Append a trailing `## Debug` section to the
-chat response (after whatever Step 3's case-skill already rendered -- the drafted prose, or a
+chat response (after whatever Step 3's case-skill already rendered -- the drafted explanation, or a
 file-write report) containing:
 
 - From Step 1, all of the following:

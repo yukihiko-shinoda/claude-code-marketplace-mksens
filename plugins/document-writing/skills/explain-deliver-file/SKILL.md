@@ -1,7 +1,7 @@
 ---
 name: explain-deliver-file
 description: >-
-  Drafts real connected prose covering an already-decided content plan under an already-computed
+  Drafts a real explanation covering an already-decided content plan under an already-computed
   length budget (a hard ceiling if strict, a rough anchor if not), then delivers it to a Markdown
   -o file path with overwrite confirmation. Invoked via the Skill tool, not typed directly: its
   caller (currently only explain) has already resolved the output language, converted the
@@ -80,7 +80,7 @@ directly.
 
 ### 1. Draft the explanation
 
-Write real, connected prose in `$language` that covers every point in `$points`. This drafting
+Write a real explanation in `$language` that covers every point in `$points`. This drafting
 must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`
 -- read it there, covering all of the following:
 
@@ -111,7 +111,7 @@ inside the file start at `##`.
 
 #### Counting the draft
 
-Only when `$strict` is `true`. Count each draft's body prose -- without the `# $topic` heading
+Only when `$strict` is `true`. Count each draft's body text -- without the `# $topic` heading
 Step 2 adds -- with the bundled script, piping the draft in through a quoted heredoc:
 
 ```bash
@@ -135,7 +135,7 @@ own reasoning if the command fails for any of the following reasons:
    silently rename or add an extension.
 2. `Glob` the literal `$output-path`. If it matches an existing file, use `AskUserQuestion` to ask
    whether to edit it in place or choose a different path -- never overwrite silently.
-3. `Write` the prose to `$output-path` (or `Edit` it, if `$output-action` is `edit` or the user
+3. `Write` the explanation to `$output-path` (or `Edit` it, if `$output-action` is `edit` or the user
    chose to revise the existing file found in step 2), under a single top-level `# $topic`
    heading, with the body formatted per
    `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` as drafted in Step 1.
@@ -151,11 +151,11 @@ own reasoning if the command fails for any of the following reasons:
   approximate anchor, not an exact tally. When `$strict` is `true`, counting and re-shortening
   (bounded to 3 attempts) is required, not optional.
 - The plaintext-only, zero-Markdown restriction that applies to `explain-deliver-chat-strict`
-  never applies here, regardless of `$strict` -- file delivery always wraps the prose as Markdown
+  never applies here, regardless of `$strict` -- file delivery always wraps the explanation as Markdown
   under a `# $topic` heading.
 - Follow `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` for how a point's
   rendering must handle all of the following -- `$points` is only the content plan; turning it into
-  real connected prose with that shape is this skill's own job:
+  a real explanation with that shape is this skill's own job:
   - Conclusion
   - Reason
   - Headings

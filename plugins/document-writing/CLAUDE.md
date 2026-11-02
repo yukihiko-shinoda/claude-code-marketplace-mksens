@@ -5,7 +5,7 @@ content, in addition to the marketplace-level guidance in the repository root `C
 
 ## The `explain` skill family
 
-`explain` drafts a topic into real connected prose for a stated audience, sized to a length budget
+`explain` drafts a topic into a real explanation for a stated audience, sized to a length budget
 given as seconds/minutes to read or a direct character count, then delivers it to chat or an output
 file. It does not run alone — it delegates to a script for its deterministic preparation (with a
 reference file as the fallback), to a sibling skill for deciding what to cover, and to one of three

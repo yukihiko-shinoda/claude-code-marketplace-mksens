@@ -1,7 +1,7 @@
 # Structured Prose Formatting
 
 Shared drafting/formatting procedure used by both `explain-deliver-chat` and `explain-deliver-file`
--- the two `explain` case-skills that render Markdown-capable connected prose (to chat, or to a
+-- the two `explain` case-skills that render a Markdown-capable explanation (to chat, or to a
 `.md` file). `explain-deliver-chat-strict` deliberately does not use this file: its own
 plaintext-only, zero-Markdown restriction makes every rule below inapplicable, so it keeps its own
 inline ordering rule instead of pointing here.
@@ -23,7 +23,7 @@ justification, nest that justification one level deeper still, beneath the reaso
 ## Headings
 
 Below a rough length anchor, the drafted explanation renders with no headings at all -- just the
-conclusion-and-nested-reason prose described above. As a rough anchor, judged by eye and never by a
+conclusion-and-nested-reason shape described above. As a rough anchor, judged by eye and never by a
 tool call: about 280 half-width characters (Latin letters, digits, ASCII punctuation) alone, or
 about 140 full-width/multibyte characters (Japanese, CJK, etc.) alone, or any mix that feels like
 it's in that range. Once the drafted content runs long enough to cross that anchor, split it into
