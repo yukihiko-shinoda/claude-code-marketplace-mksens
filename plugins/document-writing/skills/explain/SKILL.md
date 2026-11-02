@@ -64,9 +64,9 @@ Branch on its stdout:
 
 | Stdout | Next |
 | --- | --- |
-| Has `ask` | Ask the user that question with `AskUserQuestion`, then re-run with the corrected text |
+| Has `ask` (exit 1) | Ask the user that question with `AskUserQuestion`, then re-run with the corrected text |
 | Has `case` | Keep each field as the same-named variable (e.g. `target` as `$target`) |
-| Anything else, or the command fails (e.g. `uv` is missing) | Follow the manual procedure below |
+| `needs_language_agent`, anything else, or failure with no `ask` (e.g. no `uv`) | Follow the manual procedure below |
 
 The manual procedure is in `${CLAUDE_PLUGIN_ROOT}/references/explain-manual-preparation.md` -- read
 it there, taking its `<plugin-root>` to mean `${CLAUDE_PLUGIN_ROOT}`. It sets the same variables.
