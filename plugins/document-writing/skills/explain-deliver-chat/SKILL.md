@@ -1,11 +1,13 @@
 ---
 name: explain-deliver-chat
 description: >-
-  Drafts real connected prose covering an already-decided content plan under an already-computed
+  Drafts a real explanation covering an already-decided content plan under an already-computed
   length budget treated as a rough anchor, then delivers it directly to chat. Invoked via the
   Skill tool, not typed directly: its caller (currently only explain) has already resolved the
   output language, converted the how-long budget, confirmed the budget is not strict with no -o
   path given, and obtained the content plan before calling here.
+allowed-tools:
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md)
 when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a strict, hard-ceiling budget with its plaintext-only restriction
@@ -56,7 +58,7 @@ directly.
 
 ### 1. Draft the explanation
 
-Write real, connected prose in `$language` that covers every point in `$points`. This drafting
+Write a real explanation in `$language` that covers every point in `$points`. This drafting
 must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md`
 -- read it there, covering all of the following:
 
@@ -71,7 +73,7 @@ Treat `$target` as a rough anchor judged by eye. Draft once -- a result landing 
 
 ### 2. Deliver the explanation
 
-Render the drafted prose directly as this skill's chat response.
+Render the drafted explanation directly as this skill's chat response.
 
 ## Guardrails
 
@@ -80,7 +82,7 @@ Render the drafted prose directly as this skill's chat response.
   -- both are approximate anchors, not an exact tally.
 - Follow `${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md` for how a point's
   rendering must handle all of the following -- `$points` is only the content plan; turning it into
-  real connected prose with that shape is this skill's own job:
+  a real explanation with that shape is this skill's own job:
   - Conclusion
   - Reason
   - Headings

@@ -15,13 +15,15 @@ to each other:
 - `-o` followed by whitespace and either a double-quoted string or the next whitespace-delimited
   token -- strip both, keep the value as `$output-path`.
 
-Then trim whatever remains -- that is the literal how-long budget string (e.g. `5m`). If a
+Then trim whatever remains, along with any double quotes around it -- that is the literal how-long
+budget string (e.g. `5m`). If a
 `-`-prefixed token remains that matched none of the three flags, ask the user to clarify it rather
 than silently ignoring it. If the budget string is empty, ask the user for it instead of guessing.
 
 ## 2. Resolve the output language
 
-Call `Agent` with `subagent_type: "explain-language-resolver"`, passing all of the following:
+Call `Agent` with `subagent_type: "document-writing:explain-language-resolver"`, passing all of the
+following:
 
 - The topic
 - The audience
@@ -37,12 +39,12 @@ Run the bundled script with `Bash`, passing the budget string from section 1 and
 `$resolved-language`:
 
 ```bash
-uv run --no-cache --script <plugin-root>/scripts/explain_how_long.py "<how-long>" "$resolved-language"
+uv run --no-cache --script <plugin-root>/scripts/explain_how_long.py "<how-long>" "<resolved-language>"
 ```
 
 Use its stdout only when it is a single JSON object. If the command fails, or prints anything else,
-call `Agent` with `subagent_type: "explain-how-long-converter"`, passing the same two values
-instead. Both share one output contract: if the response has `error`, use `AskUserQuestion` to ask
+call `Agent` with `subagent_type: "document-writing:explain-how-long-converter"`, passing the same
+two values instead. Both share one output contract: if the response has `error`, use `AskUserQuestion` to ask
 for a valid budget, showing examples (`30s`, `5m`, `500c`). Otherwise keep all of the following as
 the same-named variables:
 

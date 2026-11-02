@@ -38,7 +38,8 @@ Invoke as `/review-audience-coverage <path-or-text> [--debug]`.
 
 ### 1. Infer the implied stage and owed terms
 
-Call the `Agent` tool with `subagent_type: "audience-stage-classifier"`, passing `$path-or-text`
+Call the `Agent` tool with
+`subagent_type: "document-writing:oath-formula:audience-stage-classifier"`, passing `$path-or-text`
 unchanged. If this skill's own debug mode is on (Using Arguments step 1), append this exact text to
 the end of the prompt: `(debug mode: also report stage and evidence)`.
 
@@ -139,9 +140,10 @@ Each entry now holds `(label, owed_terms, stage?, evidence?)`.
 ### 2. Evaluate coverage per entry
 
 For each entry from Step 1, call the `Agent` tool with
-`subagent_type: "review-audience-coverage-reviewer"`, passing that entry's own target (its file
-path, or the pasted text) and its `owed_terms` list. If this skill's own debug mode is on, append
-this exact text to the end of the prompt: `(debug mode: also report evidence per term)`.
+`subagent_type: "document-writing:review-audience-coverage:review-audience-coverage-reviewer"`,
+passing that entry's own target (its file path, or the pasted text) and its `owed_terms` list. If
+this skill's own debug mode is on, append this exact text to the end of the prompt:
+`(debug mode: also report evidence per term)`.
 
 Parse the subagent's JSON response, shaped as follows (each entry additionally carrying `"evidence"`
 in debug mode), and attach it to that entry:
@@ -162,10 +164,10 @@ in debug mode), and attach it to that entry:
 ### 3. Scan for unexplained jargon
 
 For each entry from Step 1, call the `Agent` tool with
-`subagent_type: "review-audience-coverage-jargon-checker"`, passing that entry's own target (its
-file path, or the pasted text) — no `owed_terms` needed; this subagent finds its own candidates. If
-this skill's own debug mode is on, append this exact text to the end of the prompt: `(debug mode:
-also report the surrounding excerpt per flagged term)`.
+`subagent_type: "document-writing:review-audience-coverage:review-audience-coverage-jargon-checker"`,
+passing that entry's own target (its file path, or the pasted text) — no `owed_terms` needed; this
+subagent finds its own candidates. If this skill's own debug mode is on, append this exact text to
+the end of the prompt: `(debug mode: also report the surrounding excerpt per flagged term)`.
 
 Parse the subagent's JSON response, shaped as follows (each entry additionally carrying `"excerpt"`
 in debug mode), and attach it to that entry:

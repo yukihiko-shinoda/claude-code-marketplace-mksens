@@ -1,17 +1,14 @@
 ---
 name: explain
 description: >-
-  Outputs an actual prose explanation, not a list of bullet points, about a topic for a stated
-  audience, sized to a length budget given as seconds/minutes to read or a direct character count.
-  Delegates argument parsing, language normalization, budget conversion, and routing to a bundled
-  Python script (falling back to a prompt-based procedure when uv is unavailable or the language
-  needs detecting), calls explain-for-stated-audience for the content plan, then routes to one of
-  three case-skills -- explain-deliver-chat-strict, explain-deliver-chat, or explain-deliver-file
-  -- to draft and deliver the prose, and renders its own trailing debug section.
+  Outputs an actual explanation, not an outline of points to cover, about a topic for a stated
+  audience, sized to a length budget given as seconds/minutes to read or a direct character count,
+  and delivered to chat or a Markdown file.
 argument-hint: '"<topic>" "<audience>" "<how-long>" [-o <path>] [-l <language>] [--debug]'
-arguments: [topic, audience, how-long]
+arguments: [topic, audience]
 allowed-tools:
   - Agent
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/explain-manual-preparation.md)
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py *)
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_how_long.py *)
   - Skill(explain-for-stated-audience)
@@ -20,8 +17,10 @@ allowed-tools:
   - Skill(explain-deliver-file)
   - AskUserQuestion
 when_to_use: >-
-  The audience is always stated directly by the caller — this skill never infers it from a draft
-  or transcript.
+  Use when asked to explain or write up a topic for a named reader within a length or reading-time
+  limit, e.g. "explain Docker layers to a new hire in 2 minutes" or "a 280-character explanation of
+  this bug for social media". The audience is always stated directly by the caller — this skill
+  never infers it from a draft or transcript.
 ---
 
 # Explain
@@ -32,15 +31,20 @@ Invoke as `/explain "<topic>" "<audience>" "<how-long>" [-o <path>] [-l <languag
 always double-quote all of the following, since Claude Code splits the raw invocation into named
 arguments by quoted segment, not by whitespace alone:
 
-- `$topic`
-- `$audience`
-- `$how-long`
+- The topic
+- The audience
+- The how-long budget
 
-The three trailing flags are documented only in `argument-hint`, not in `arguments` -- they arrive
-as raw text appended after the third positional.
+Only the topic and the audience are named in `arguments`. The how-long budget and the three
+trailing flags are read from the full invocation, exactly as typed:
 
-If `$topic` or `$audience` is empty, ask the user for the missing piece(s) instead of guessing --
-never assume a default topic or audience.
+```text
+$ARGUMENTS
+```
+
+If the first or second positional is missing or empty (`""`) in that invocation, ask the user for
+the missing piece(s) instead of guessing -- never assume a default topic or audience. This check names them by
+position because their named placeholders expand to the empty value itself.
 
 ## Steps
 
@@ -48,11 +52,11 @@ never assume a default topic or audience.
 
 Check whether this conversation's own system prompt already states a language to respond in (e.g.
 a section such as "# Language" naming one) -- if so, keep that language as `$ambient-language`;
-otherwise use an empty string. Then run the bundled script, piping the raw text bound to
-`$how-long`, flags included, through a quoted heredoc:
+otherwise use an empty string. Then run the bundled script, piping everything in the full invocation
+after the second positional, flags included, through a quoted heredoc:
 
 ```bash
-uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py "$ambient-language" <<'EOF'
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py "<ambient-language>" <<'EOF'
 <raw how-long text>
 EOF
 ```
@@ -61,9 +65,9 @@ Branch on its stdout:
 
 | Stdout | Next |
 | --- | --- |
-| Has `ask` | Ask the user that question with `AskUserQuestion`, then re-run with the corrected text |
+| Has `ask` (exit 1) | Ask the user that question with `AskUserQuestion`, then re-run with the corrected text |
 | Has `case` | Keep each field as the same-named variable (e.g. `target` as `$target`) |
-| Anything else, or the command fails (e.g. `uv` is missing) | Follow the manual procedure below |
+| `needs_language_agent`, anything else, or failure with no `ask` (e.g. no `uv`) | Follow the manual procedure below |
 
 The manual procedure is in `${CLAUDE_PLUGIN_ROOT}/references/explain-manual-preparation.md` -- read
 it there, taking its `<plugin-root>` to mean `${CLAUDE_PLUGIN_ROOT}`. It sets the same variables.
@@ -85,6 +89,9 @@ output:
 - `excluded_prerequisites`
 - `stage`
 - `evidence`
+
+That skill's JSON-only output is an intermediate result, not this skill's own: continue to Step 3
+in the same turn.
 
 ### 3. Delegate drafting and delivery
 
@@ -121,14 +128,14 @@ None of the 3 case-skills receives any of the following:
 Step 4 below renders this skill's own debug output directly, using values this skill already
 holds, so nothing debug-related needs to cross into any case-skill's own `args` at all.
 
-The chosen case-skill drafts the prose and delivers it (to chat, or to `$output-path` with
+The chosen case-skill drafts the explanation and delivers it (to chat, or to `$output-path` with
 overwrite confirmation). This skill's own job continues only into Step 4 below; there is nothing
 else to render for the delivery itself once the call returns.
 
 ### 4. Render debug output
 
 Only when this skill's own debug mode is on (Step 1). Append a trailing `## Debug` section to the
-chat response (after whatever Step 3's case-skill already rendered -- the drafted prose, or a
+chat response (after whatever Step 3's case-skill already rendered -- the drafted explanation, or a
 file-write report) containing:
 
 - From Step 1, all of the following:
@@ -155,9 +162,9 @@ file-write report) containing:
 ## Guardrails
 
 - Never guess a missing value among the following -- always ask:
-  - `$topic`
-  - `$audience`
-  - How-long budget
+  - The topic
+  - The audience
+  - The how-long budget
 - Never do any of the following in this skill's own reasoning -- each is delegated whole to its
   own script, subagent, or skill (Steps 1-3); this skill's own job is only to resolve arguments,
   run those delegations in order, and forward each one's results as the next one's inputs:

@@ -86,7 +86,7 @@ registration elsewhere is needed since Claude Code discovers styles by scanning 
 ### Skill, agent, and reference files
 
 `plugins/document-writing/skills/`, `agents/`, and `references/` hold two skill families: `explain` —
-drafts audience- and length-budget-aware prose, delivered to chat or a Markdown file — and
+drafts audience- and length-budget-aware explanations, delivered to chat or a Markdown file — and
 `review-audience-coverage` — audits an existing document against the audience its own framing
 implies — plus everything each needs to run standalone, self-contained within this plugin — see
 `plugins/document-writing/CLAUDE.md` for the full dependency diagram. Adding a
