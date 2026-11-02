@@ -12,6 +12,7 @@ allowed-tools:
   - Write
   - Edit
   - AskUserQuestion
+  - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py *)
 when_to_use: >-
   Not for chat delivery of any kind (explain-deliver-chat-strict or explain-deliver-chat, chosen
   by explain's Step 3 table). Unlike those two siblings, the plaintext-only restriction never
@@ -88,15 +89,39 @@ That file's heading rule starts section headings one level below whatever title 
 already wraps the whole response -- here that is Step 2's `# $topic` heading, so section headings
 inside the file start at `##`.
 
-- If `$strict` is `true`: treat `$target` as a hard ceiling on `$metric`. After drafting, count
-  the actual length by explicit tally and, if it exceeds `$target`, shorten and recount. Repeat up
-  to 3 times; if still over budget after 3 attempts, deliver it anyway rather than looping
-  indefinitely -- this fact stays visible in this conversation's own transcript, which is enough
-  for `explain`'s own trailing Debug step to reference later if its debug mode is on; no separate
-  return value is needed. The plaintext-only restriction from the chat-strict case never applies
-  here -- Step 2's normal Markdown-file wrapping always governs.
+- If `$strict` is `true`: treat `$target` as a hard ceiling on `$metric`, which overrides covering
+  every point: `$points` may hold more than `$target` can fit, since it is planned without knowing
+  the budget. Choose what to keep by how much the rest of the explanation depends on a point, then
+  drop or merge the least essential points rather than compressing every point until a sentence no
+  longer makes sense on its own to a reader without the plan's background. This decides only what
+  stays, not the order it appears in. After drafting, count the
+  actual length as described in "Counting the draft" below and, if it exceeds `$target`, shorten
+  by dropping or merging the next-least-essential point, then recount. Repeat up to 3 times; if still over budget after 3 attempts, deliver it
+  anyway rather than looping indefinitely -- this fact stays visible in this conversation's own
+  transcript, which is enough for `explain`'s own trailing Debug step to reference later if its
+  debug mode is on; no separate return value is needed. The plaintext-only restriction from the
+  chat-strict case never applies here -- Step 2's normal Markdown-file wrapping always governs.
 - If `$strict` is `false`: treat `$target` as a rough anchor judged by eye. Draft once -- a result
   landing a little outside `$target` either way is not a defect and does not need a rewrite.
+
+#### Counting the draft
+
+Only when `$strict` is `true`. Count each draft's body prose -- without the `# $topic` heading
+Step 2 adds -- with the bundled script, piping the draft in through a quoted heredoc:
+
+```bash
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "$metric" "$target" <<'EOF'
+<draft>
+EOF
+```
+
+Its stdout is a JSON object whose `length` is the draft's measured length and whose `within`
+says whether that length fits `$target`. Fall back to counting by explicit tally in this skill's
+own reasoning if the command fails for any of the following reasons:
+
+- `uv` is not installed (e.g. `command not found`)
+- `uv` itself errors before running the script (e.g. it cannot write its temporary files)
+- The stdout is not a single JSON object
 
 ### 2. Deliver the explanation
 

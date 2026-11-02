@@ -7,6 +7,8 @@ description: >-
   explain) has already resolved the output language, converted the how-long budget, confirmed the
   budget is strict (target <= 280) with no -o path given, and obtained the content plan before
   calling here.
+allowed-tools:
+  - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py *)
 when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a non-strict, rough-anchor budget (explain-deliver-chat) — each of the 3 sibling
@@ -67,23 +69,47 @@ directly.
 
 ### 1. Draft the explanation
 
-Write real, connected prose in `$language` that covers every point in `$points` -- never a
-bulleted list or outline standing in for prose.
+Write real, connected prose in `$language` that covers the points in `$points` -- never a bulleted
+list or outline standing in for prose.
+
+- `$points` may hold more than `$target` can fit, since it is planned without knowing the budget.
+  Choose what to keep by how much the rest of the explanation depends on a point, then drop or
+  merge the least essential points rather than compressing every point until a sentence no longer
+  makes sense on its own to a reader without the plan's background. This decides only what stays,
+  not the order it appears in.
 
 - Order the explanation abstract-first then concrete, and conclusion-first then reason: state the
   overall point before the supporting detail, both at the level of the whole explanation and
   within each point it covers.
-- Treat `$target` as a hard ceiling on `$metric`. After drafting, count the actual length by
-  explicit tally and, if it exceeds `$target`, shorten and recount. Repeat up to 3 times; if still
-  over budget after 3 attempts, deliver it anyway rather than looping indefinitely -- this fact
-  stays visible in this conversation's own transcript, which is enough for `explain`'s own
-  trailing Debug step to reference later if its debug mode is on; no separate return value is
-  needed.
+- Treat `$target` as a hard ceiling on `$metric`. After drafting, count the actual length as
+  described in "Counting the draft" below and, if it exceeds `$target`, shorten by dropping or
+  merging the next-least-essential point, then recount. Repeat up to 3 times; if still over budget after 3 attempts, deliver it anyway rather than
+  looping indefinitely -- this fact stays visible in this conversation's own transcript, which is
+  enough for `explain`'s own trailing Debug step to reference later if its debug mode is on; no
+  separate return value is needed.
 - The drafted prose must also be plain text only: no Markdown syntax of any kind -- no headers, no
   bold/italic emphasis, no backtick code spans, no links -- plain sentences only. The strict
   budget this skill is only ever called for signals an SNS-style destination that won't render
   Markdown, so any markup syntax is both wasted budget and a literal stray character in the
   delivered text.
+
+#### Counting the draft
+
+Count each draft with the bundled script, piping the draft in through a quoted heredoc:
+
+```bash
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "$metric" "$target" <<'EOF'
+<draft>
+EOF
+```
+
+Its stdout is a JSON object whose `length` is the draft's measured length and whose `within`
+says whether that length fits `$target`. Fall back to counting by explicit tally in this skill's
+own reasoning if the command fails for any of the following reasons:
+
+- `uv` is not installed (e.g. `command not found`)
+- `uv` itself errors before running the script (e.g. it cannot write its temporary files)
+- The stdout is not a single JSON object
 
 ### 2. Deliver the explanation
 

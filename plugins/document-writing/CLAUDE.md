@@ -14,18 +14,42 @@ delivery. The full dependency tree, spanning `skills/`, `agents/`, and `referenc
 ```text
 skills/explain
 ├── Agent: explain-language-resolver          agents/explain-language-resolver.md
-├── Agent: explain-how-long-converter          agents/explain-how-long-converter.md
+├── Script: explain_how_long.py                scripts/explain_how_long.py
+│     └── (fallback) Agent: explain-how-long-converter  agents/explain-how-long-converter.md
 ├── Skill: explain-for-stated-audience         skills/explain-for-stated-audience/SKILL.md
 │     ├── references/content-value-vocabulary.md
 │     └── Agent: topic-audience-stage-classifier  agents/oath-formula/topic-audience-stage-classifier.md
 │           ├── agents/oath-formula/references/awareness-stage.md
 │           └── agents/oath-formula/references/owed-terms-output-contract.md
 ├── Skill: explain-deliver-chat-strict         skills/explain-deliver-chat-strict/SKILL.md
+│     └── Script: explain_count_length.py      scripts/explain_count_length.py
 ├── Skill: explain-deliver-chat                skills/explain-deliver-chat/SKILL.md
 │     └── references/structured-prose-formatting.md
 └── Skill: explain-deliver-file                skills/explain-deliver-file/SKILL.md
-      └── references/structured-prose-formatting.md
+      ├── references/structured-prose-formatting.md
+      └── Script: explain_count_length.py      scripts/explain_count_length.py
 ```
+
+## Bundled Python scripts
+
+`scripts/` holds stdlib-only Python scripts that replace a deterministic step a prompt would
+otherwise perform. Each one carries a PEP 723 inline-metadata header and is run as
+`uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/<name>.py`. `--no-cache` keeps the call
+independent of environment settings: a stdlib-only script gains nothing from uv's cache, while a
+sandbox can leave that cache read-only, which makes uv fail before the script starts. Since uv is
+not guaranteed in every environment, each calling skill keeps the original prompt-based procedure
+as its fallback, used whenever the command fails or prints something other than one JSON object:
+
+| Script | Replaces | Fallback |
+| --- | --- | --- |
+| `explain_how_long.py` | The `explain-how-long-converter` agent | That same agent |
+| `explain_count_length.py` | The strict-mode "explicit tally" of a draft's length | Tallying by the skill itself |
+
+`explain_how_long.py` must keep the same JSON output contract as `explain-how-long-converter`,
+since `skills/explain` reads either one's response the same way. The one intentional difference is
+the writing-system classification: the script uses a fixed set of ideographic languages
+(`IDEOGRAPHIC_LANGUAGES`, currently `ja` and `zh`) and treats every other language as phonetic,
+where the agent classifies from its own linguistic knowledge.
 
 `explain` itself picks exactly one of `explain-deliver-chat-strict`, `explain-deliver-chat`, or
 `explain-deliver-file` per invocation (based on whether an output path was given and whether the
