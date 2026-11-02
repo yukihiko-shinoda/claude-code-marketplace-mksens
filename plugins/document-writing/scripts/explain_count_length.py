@@ -3,11 +3,11 @@
 # dependencies = []
 # ///
 # Copyright (c) 2026 Yukihiko Shinoda
-"""Count a drafted explanation's length against a strict budget.
+"""Count a drafted explanation's length against a strict budget and decide what the draft needs next.
 
 Reads the draft from stdin.
 
-Usage: explain_count_length.py <characters|words> <target>
+Usage: explain_count_length.py <characters|words> <target> <plaintext|markdown> <revisions>
 """
 
 from __future__ import annotations
@@ -15,10 +15,13 @@ from __future__ import annotations
 import json
 import re
 import sys
+from dataclasses import dataclass
 from enum import Enum
 from enum import StrEnum
 
-EXPECTED_ARGC = 3
+EXPECTED_ARGC = 5
+MAX_REVISIONS = 3
+USAGE = "usage: explain_count_length.py <characters|words> <target> <plaintext|markdown> <revisions>"
 
 
 class Metric(StrEnum):
@@ -26,6 +29,21 @@ class Metric(StrEnum):
 
     CHARACTERS = "characters"
     WORDS = "words"
+
+
+class Delivery(StrEnum):
+    """The form the draft is delivered in, which decides whether Markdown syntax is a defect."""
+
+    PLAINTEXT = "plaintext"
+    MARKDOWN = "markdown"
+
+
+class NextStep(StrEnum):
+    """What the calling skill does with the draft after this count."""
+
+    DELIVER = "deliver"
+    REMOVE_MARKDOWN = "remove_markdown"
+    SHORTEN = "shorten"
 
 
 class MarkdownSyntax(Enum):
@@ -73,22 +91,58 @@ class DraftLength:
         }
 
 
+@dataclass(frozen=True)
+class DraftReview:
+    """Decide the draft's next step, so every strict delivery shares one fix order and one revision ceiling."""
+
+    draft: DraftLength
+    target: float
+    delivery: Delivery
+    revisions: int
+
+    @classmethod
+    def parse(cls, argv: list[str], text: str) -> DraftReview:
+        """Return the review the command line describes, raising ValueError for malformed arguments."""
+        if len(argv) != EXPECTED_ARGC:
+            message = f"expected {EXPECTED_ARGC - 1} arguments, got {len(argv) - 1}"
+            raise ValueError(message)
+        _, metric, target, delivery, revisions = argv
+        return cls(DraftLength(text, Metric(metric)), float(target), Delivery(delivery), int(revisions))
+
+    @property
+    def needed(self) -> NextStep:
+        """Return what would fix the draft, removing Markdown first since doing so also shortens it."""
+        if self.delivery is Delivery.PLAINTEXT and MarkdownSyntax.found_in(self.draft.text):
+            return NextStep.REMOVE_MARKDOWN
+        if self.draft.length > self.target:
+            return NextStep.SHORTEN
+        return NextStep.DELIVER
+
+    def report(self) -> dict[str, object]:
+        """Return the draft's measurements plus its next step, giving up once the revision ceiling is reached."""
+        needed = self.needed
+        gave_up = needed is not NextStep.DELIVER and self.revisions >= MAX_REVISIONS
+        return {
+            **self.draft.report(self.target),
+            "revisions": self.revisions,
+            "next": NextStep.DELIVER if gave_up else needed,
+            "gave_up": gave_up,
+        }
+
+
 def emit(result: dict[str, object]) -> None:
     """Write one JSON object to stdout as the script's whole output."""
     sys.stdout.write(json.dumps(result) + "\n")
 
 
 def main() -> int:
-    """Measure the draft read from stdin and emit the report as JSON."""
-    if len(sys.argv) != EXPECTED_ARGC or sys.argv[1] not in tuple(Metric):
-        emit({"error": "usage: explain_count_length.py <characters|words> <target>"})
-        return 2
+    """Review the draft read from stdin and emit the report as JSON."""
     try:
-        target = float(sys.argv[2])
-    except ValueError:
-        emit({"error": f"invalid target: {sys.argv[2]}"})
+        review = DraftReview.parse(sys.argv, sys.stdin.read())
+    except ValueError as error:
+        emit({"error": f"{USAGE}: {error}"})
         return 2
-    emit(DraftLength(sys.stdin.read(), Metric(sys.argv[1])).report(target))
+    emit(review.report())
     return 0
 
 

@@ -27,11 +27,13 @@ skills/explain
 │           └── agents/oath-formula/references/owed-terms-output-contract.md
 ├── Skill: explain-deliver-chat-strict         skills/explain-deliver-chat-strict/SKILL.md
 │     └── Script: explain_count_length.py      scripts/explain_count_length.py
+│           └── (fallback) references/explain-manual-counting.md
 ├── Skill: explain-deliver-chat                skills/explain-deliver-chat/SKILL.md
 │     └── references/structured-prose-formatting.md
 └── Skill: explain-deliver-file                skills/explain-deliver-file/SKILL.md
       ├── references/structured-prose-formatting.md
       └── Script: explain_count_length.py      scripts/explain_count_length.py
+            └── (fallback) references/explain-manual-counting.md
 ```
 
 ## Bundled Python scripts
@@ -48,7 +50,7 @@ as its fallback, used whenever the command fails or prints something other than 
 | --- | --- | --- |
 | `explain_prepare.py` | `explain`'s deterministic preparation, listed below | `explain-manual-preparation.md` |
 | `explain_how_long.py` | The `explain-how-long-converter` agent | That same agent |
-| `explain_count_length.py` | The strict-mode length tally and by-eye Markdown check | Both by the skill itself |
+| `explain_count_length.py` | The strict-mode checks and revision decision | `explain-manual-counting.md` |
 
 `explain_prepare.py` covers all of the following:
 
@@ -67,6 +69,9 @@ and convert a budget the same way.
 script completes never loads it. A file read this way gets no `${CLAUDE_PLUGIN_ROOT}` substitution,
 so it says `<plugin-root>` and `SKILL.md` states what that means. Its result must keep setting the
 same variables as the script's success shape, whose keys match those variable names.
+
+`references/explain-manual-counting.md` stays out of the strict delivery skills for the same reason.
+It must keep the same check order and revision ceiling as `explain_count_length.py`'s `DraftReview`.
 
 `explain_how_long.py` must keep the same JSON output contract as `explain-how-long-converter`,
 since `skills/explain` reads either one's response the same way. The one intentional difference is

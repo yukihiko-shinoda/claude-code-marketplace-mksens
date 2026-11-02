@@ -9,6 +9,7 @@ description: >-
   here.
 allowed-tools:
   - Read(${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md)
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/explain-manual-counting.md)
   - Glob
   - Write
   - Edit
@@ -100,12 +101,8 @@ inside the file start at `##`.
   the budget. Choose what to keep by how much the rest of the explanation depends on a point, then
   drop or merge the least essential points rather than compressing every point until a sentence no
   longer makes sense on its own to a reader without the plan's background. This decides only what
-  stays, not the order it appears in. After drafting, count the
-  actual length as described in "Counting the draft" below and, if it exceeds `$target`, shorten
-  by dropping or merging the next-least-essential point, then recount. Repeat up to 3 times; if still over budget after 3 attempts, deliver it
-  anyway rather than looping indefinitely -- this fact stays visible in this conversation's own
-  transcript, which is enough for `explain`'s own trailing Debug step to reference later if its
-  debug mode is on; no separate return value is needed. The plaintext-only restriction from the
+  stays, not the order it appears in. After drafting, count the draft as described in "Counting
+  the draft" below and act on what it reports. The plaintext-only restriction from the
   chat-strict case never applies here -- Step 2's normal Markdown-file wrapping always governs.
 - If `$strict` is `false`: treat `$target` as a rough anchor judged by eye. Draft once -- a result
   landing a little outside `$target` either way is not a defect and does not need a rewrite.
@@ -115,15 +112,28 @@ inside the file start at `##`.
 Only when `$strict` is `true`. Count each draft's body text -- without the `# $topic` heading
 Step 2 adds -- with the bundled script, piping the draft in through a quoted heredoc:
 
+<!-- markdownlint-disable MD013 -->
 ```bash
-uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "<metric>" "<target>" <<'EOF'
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "<metric>" "<target>" markdown "<revisions>" <<'EOF'
 <draft>
 EOF
 ```
+<!-- markdownlint-enable MD013 -->
 
-Its stdout is a JSON object whose `length` is the draft's measured length and whose `within`
-says whether that length fits `$target`. Fall back to counting by explicit tally in this skill's
-own reasoning if the command fails for any of the following reasons:
+`<revisions>` is how many revisions the draft has had so far, starting at `0`. The stdout is a JSON
+object. Act on its `next`, never on your own reading of the other fields:
+
+| `next` | Action |
+| --- | --- |
+| `deliver` | Continue to Step 2 |
+| `shorten` | Drop or merge the next-least-essential point, then recount with `<revisions>` plus one |
+
+`next` is `deliver` with `gave_up` set to `true` once the revision ceiling is reached over budget.
+That fact stays visible in this conversation's own transcript, which is enough for `explain`'s own
+trailing Debug step to reference later if its debug mode is on.
+
+Follow `${CLAUDE_PLUGIN_ROOT}/references/explain-manual-counting.md` instead, as a skill not
+delivering plaintext, if the command fails for any of the following reasons:
 
 - `uv` is not installed (e.g. `command not found`)
 - `uv` itself errors before running the script (e.g. it cannot write its temporary files)
@@ -149,8 +159,8 @@ own reasoning if the command fails for any of the following reasons:
   first, unless `$output-action` shows `explain` already did.
 - When `$strict` is `false`, never invoke a tool call to count characters or words against
   `$target`, and never re-draft solely for landing a little outside it -- the budget is an
-  approximate anchor, not an exact tally. When `$strict` is `true`, counting and re-shortening
-  (bounded to 3 attempts) is required, not optional.
+  approximate anchor, not an exact tally. When `$strict` is `true`, counting is required, not
+  optional.
 - The plaintext-only, zero-Markdown restriction that applies to `explain-deliver-chat-strict`
   never applies here, regardless of `$strict` -- file delivery always wraps the explanation as Markdown
   under a `# $topic` heading.
