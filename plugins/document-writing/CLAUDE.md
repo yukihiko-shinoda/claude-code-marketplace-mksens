@@ -22,6 +22,7 @@ skills/explain
 │           └── (fallback) Agent: explain-how-long-converter  agents/explain-how-long-converter.md
 ├── Skill: explain-for-stated-audience         skills/explain-for-stated-audience/SKILL.md
 │     ├── references/content-value-vocabulary.md
+│     ├── Script: explain_owed_terms.py        scripts/explain_owed_terms.py
 │     └── Agent: topic-audience-stage-classifier  agents/oath-formula/topic-audience-stage-classifier.md
 │           ├── agents/oath-formula/references/awareness-stage.md
 │           └── agents/oath-formula/references/owed-terms-output-contract.md
@@ -51,6 +52,11 @@ as its fallback, used whenever the command fails or prints something other than 
 | `explain_prepare.py` | `explain`'s deterministic preparation, listed below | `explain-manual-preparation.md` |
 | `explain_how_long.py` | The `explain-how-long-converter` agent | That same agent |
 | `explain_count_length.py` | The strict-mode checks and revision decision | `explain-manual-counting.md` |
+| `explain_owed_terms.py` | The classifier, for an exactly stated list | `topic-audience-stage-classifier` |
+
+`explain_owed_terms.py` never judges a stage and holds no stage letters, so the O/A/T/H table stays
+sealed: any description without an exact list goes to the agent, as does every debug run. Callers
+whose reader segment is fixed, such as `update-readme`, state the list in their audience text.
 
 `explain_prepare.py` covers all of the following:
 
