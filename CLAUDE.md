@@ -5,14 +5,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Overview
 
 This repository is a Claude Code plugin marketplace (`mksens`) — a `.claude-plugin/marketplace.json`
-manifest plus a `plugins/` directory, with no build system, package manager, or test suite. Every
-plugin's content is plain Markdown/JSON consumed directly by Claude Code, so "development" here means
-authoring or editing those manifest and content files, not compiling or running code.
+manifest plus a `plugins/` directory, with no build system or test suite. Every plugin's content is
+plain Markdown/JSON consumed directly by Claude Code, so "development" here means authoring or
+editing those manifest and content files, not compiling or running code. The one exception is
+optional: a plugin may bundle stdlib-only Python scripts under its own `scripts/`, run through
+`uv run --script` with a prompt-based fallback when uv is unavailable (see
+`plugins/document-writing/CLAUDE.md`).
+
+The root `pyproject.toml` and `tasks.py` exist only to lint and format those scripts with
+[invokelint](https://pypi.org/project/invokelint/). They are never shipped with a plugin, since
+installing a plugin copies only its own source directory — a script's runtime dependencies belong
+in its PEP 723 header, not in `pyproject.toml`.
 
 ## Commands
 
-There are no build, lint, or test commands. Iterate on changes by installing this repository as a
-local marketplace and exercising the plugin's effect inside a Claude Code session:
+Lint and format the bundled Python scripts (each new `scripts/` directory must be added to
+`[tool.setuptools] packages` in `pyproject.toml` as a dotted path, since invokelint finds its
+targets through setuptools discovery):
+
+```bash
+uv sync
+uv run inv path   # Show which files invokelint will check
+uv run inv style  # Format
+uv run inv lint   # Ruff, Bandit, dodgy, flake8
+uv run inv lint.deep  # mypy, Pylint
+```
+
+Iterate on the Markdown content by installing this repository as a local marketplace and exercising
+the plugin's effect inside a Claude Code session:
 
 ```bash
 # Register this checkout as a marketplace (repeatable after edits)

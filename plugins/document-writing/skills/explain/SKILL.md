@@ -3,7 +3,8 @@ name: explain
 description: >-
   Outputs an actual prose explanation, not a list of bullet points, about a topic for a stated
   audience, sized to a length budget given as seconds/minutes to read or a direct character count.
-  Delegates language resolution and budget conversion to dedicated subagents, calls
+  Delegates language resolution to a dedicated subagent and budget conversion to a bundled Python
+  script (falling back to a dedicated subagent when uv is unavailable), calls
   explain-for-stated-audience for the content plan, then routes to one of three case-skills --
   explain-deliver-chat-strict, explain-deliver-chat, or explain-deliver-file -- to draft and
   deliver the prose, and renders its own trailing debug section.
@@ -11,6 +12,7 @@ argument-hint: '"<topic>" "<audience>" "<how-long>" [-o <path>] [-l <language>] 
 arguments: [topic, audience, how-long]
 allowed-tools:
   - Agent
+  - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_how_long.py *)
   - Skill(explain-for-stated-audience)
   - Skill(explain-deliver-chat-strict)
   - Skill(explain-deliver-chat)
@@ -84,9 +86,24 @@ output feeds the other. Call both in the same turn, in parallel, not one after t
 
 #### Convert the how-long budget
 
-Call `Agent` with `subagent_type: "explain-how-long-converter"`, passing the trimmed how-long
-string from "Using Arguments" step 2 and `$resolved-language` from Step 1. If the response matches
-the error shape:
+Run the bundled script with `Bash`, passing the trimmed how-long string from "Using Arguments"
+step 2 and `$resolved-language` from Step 1:
+
+```bash
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_how_long.py "<how-long>" "$resolved-language"
+```
+
+Use its stdout only when it is a single JSON object -- either the success shape or the error
+shape below. If instead the command fails for any of the following reasons, fall back to the
+subagent:
+
+- `uv` is not installed (e.g. `command not found`)
+- `uv` itself errors before running the script (e.g. it cannot write its temporary files)
+- The stdout is not a single JSON object
+
+To fall back, call `Agent` with `subagent_type: "explain-how-long-converter"`, passing the same two
+values. The script and the subagent share one output contract, so everything below applies to
+whichever one produced the response. If the response matches the error shape:
 
 ```json
 {
@@ -201,9 +218,9 @@ the drafted prose, or a file-write report) containing:
   - `$audience`
   - How-long budget
 - Never do any of the following in this skill's own reasoning -- each is delegated whole to its
-  own subagent or skill (Steps 1-3); this skill's own job is only to resolve arguments, run those
-  delegations -- Step 2's two in parallel, the rest in order -- and forward each one's results as
-  the next one's inputs:
+  own script, subagent, or skill (Steps 1-3); this skill's own job is only to resolve arguments,
+  run those delegations -- Step 2's two in parallel, the rest in order -- and forward each one's
+  results as the next one's inputs:
   - Judge the audience's awareness stage
   - Expand `what_to_explain`'s points
   - Resolve the output language

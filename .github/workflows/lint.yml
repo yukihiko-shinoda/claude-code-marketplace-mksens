@@ -1,0 +1,14 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  call-workflow-lint:
+    uses: yukihiko-shinoda/reusable-workflow-invoke-lint-lint/.github/workflows/workflow.yml@0966c64de69c044585bbdca96980a8393c761829  # v1.0.0
