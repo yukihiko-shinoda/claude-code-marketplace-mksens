@@ -32,9 +32,9 @@ Invoke as `/explain "<topic>" "<audience>" "<how-long>" [-o <path>] [-l <languag
 always double-quote all of the following, since Claude Code splits the raw invocation into named
 arguments by quoted segment, not by whitespace alone:
 
-- `$topic`
-- `$audience`
-- `$how-long`
+- The topic
+- The audience
+- The how-long budget
 
 Only the topic and the audience are named in `arguments`. The how-long budget and the three
 trailing flags are read from the full invocation, exactly as typed:
@@ -43,8 +43,9 @@ trailing flags are read from the full invocation, exactly as typed:
 $ARGUMENTS
 ```
 
-If `$topic` or `$audience` is empty, ask the user for the missing piece(s) instead of guessing --
-never assume a default topic or audience.
+If the first or second positional is missing or empty (`""`) in that invocation, ask the user for
+the missing piece(s) instead of guessing -- never assume a default topic or audience. This check names them by
+position because their named placeholders expand to the empty value itself.
 
 ## Steps
 
@@ -159,9 +160,9 @@ file-write report) containing:
 ## Guardrails
 
 - Never guess a missing value among the following -- always ask:
-  - `$topic`
-  - `$audience`
-  - How-long budget
+  - The topic
+  - The audience
+  - The how-long budget
 - Never do any of the following in this skill's own reasoning -- each is delegated whole to its
   own script, subagent, or skill (Steps 1-3); this skill's own job is only to resolve arguments,
   run those delegations in order, and forward each one's results as the next one's inputs:
