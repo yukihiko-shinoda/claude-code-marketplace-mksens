@@ -57,7 +57,7 @@ otherwise use an empty string. Then run the bundled script, piping everything in
 after the second positional, flags included, through a quoted heredoc:
 
 ```bash
-uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py "$ambient-language" <<'EOF'
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py "<ambient-language>" <<'EOF'
 <raw how-long text>
 EOF
 ```

@@ -115,7 +115,7 @@ Only when `$strict` is `true`. Count each draft's body prose -- without the `# $
 Step 2 adds -- with the bundled script, piping the draft in through a quoted heredoc:
 
 ```bash
-uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "$metric" "$target" <<'EOF'
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "<metric>" "<target>" <<'EOF'
 <draft>
 EOF
 ```

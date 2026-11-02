@@ -38,7 +38,7 @@ Run the bundled script with `Bash`, passing the budget string from section 1 and
 `$resolved-language`:
 
 ```bash
-uv run --no-cache --script <plugin-root>/scripts/explain_how_long.py "<how-long>" "$resolved-language"
+uv run --no-cache --script <plugin-root>/scripts/explain_how_long.py "<how-long>" "<resolved-language>"
 ```
 
 Use its stdout only when it is a single JSON object. If the command fails, or prints anything else,
