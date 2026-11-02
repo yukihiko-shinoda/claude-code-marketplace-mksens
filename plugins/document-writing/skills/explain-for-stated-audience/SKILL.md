@@ -12,6 +12,7 @@ argument-hint: '"<topic>" "<audience>" [--debug]'
 arguments: [topic, audience]
 allowed-tools:
   - Agent
+  - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_owed_terms.py *)
 when_to_use: >-
   Called directly by section-drafting skills or auto-loaded rules that already know (or just
   asked the user for) their target reader segment — e.g. update-readme's Advantage section,
@@ -55,12 +56,26 @@ splits the raw invocation into the two named arguments by quoted segment, not by
    token follows, enable debug mode.
 2. If either `$topic` or `$audience` is empty, ask the caller for the missing one instead of
    guessing.
-3. `$audience` may state a stage signal (a letter or stage name), a prerequisite-background signal
-   (certifications, role, stated familiarity), both, or neither.
+3. `$audience` may state an owed-terms list (`owed terms are: Solution, Conviction`), a stage signal
+   (a letter or stage name), a prerequisite-background signal (certifications, role, stated
+   familiarity), any mix of these, or none of them.
 
 ## Steps
 
 ### 1. Determine the owed abstract terms (stage pass)
+
+Unless this skill's own `--debug` was passed, first run the bundled script, piping `$audience`
+through a quoted heredoc:
+
+```bash
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_owed_terms.py <<'EOF'
+<audience>
+EOF
+```
+
+If its stdout has `owed_terms`, take that list and continue to Step 2 without calling the agent
+below. If it has `needs_agent`, prints anything else, or the command fails, call the agent. Debug
+mode always calls the agent, since only the agent reports `stage` and `evidence`.
 
 Call the `Agent` tool with
 `subagent_type: "document-writing:oath-formula:topic-audience-stage-classifier"`, stating both
