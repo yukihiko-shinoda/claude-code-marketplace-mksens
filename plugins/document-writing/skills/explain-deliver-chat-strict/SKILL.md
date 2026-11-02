@@ -8,6 +8,7 @@ description: >-
   budget is strict (target <= 280) with no -o path given, and obtained the content plan before
   calling here.
 allowed-tools:
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/explain-manual-counting.md)
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py *)
 when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
@@ -81,12 +82,8 @@ list or outline standing in for prose.
 - Order the explanation abstract-first then concrete, and conclusion-first then reason: state the
   overall point before the supporting detail, both at the level of the whole explanation and
   within each point it covers.
-- Treat `$target` as a hard ceiling on `$metric`. After drafting, count the actual length as
-  described in "Counting the draft" below and, if it exceeds `$target`, shorten by dropping or
-  merging the next-least-essential point, then recount. Repeat up to 3 times; if still over budget after 3 attempts, deliver it anyway rather than
-  looping indefinitely -- this fact stays visible in this conversation's own transcript, which is
-  enough for `explain`'s own trailing Debug step to reference later if its debug mode is on; no
-  separate return value is needed.
+- Treat `$target` as a hard ceiling on `$metric`. After drafting, count the draft as described in
+  "Counting the draft" below and act on what it reports.
 - The drafted prose must also be plain text only: no Markdown syntax of any kind -- no headers, no
   bold/italic emphasis, no backtick code spans, no links -- plain sentences only. The strict
   budget this skill is only ever called for signals an SNS-style destination that won't render
@@ -97,17 +94,29 @@ list or outline standing in for prose.
 
 Count each draft with the bundled script, piping the draft in through a quoted heredoc:
 
+<!-- markdownlint-disable MD013 -->
 ```bash
-uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "<metric>" "<target>" <<'EOF'
+uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_count_length.py "<metric>" "<target>" plaintext "<revisions>" <<'EOF'
 <draft>
 EOF
 ```
+<!-- markdownlint-enable MD013 -->
 
-Its stdout is a JSON object whose `length` is the draft's measured length, whose `within` says
-whether that length fits `$target`, and whose `markdown_syntax` lists the Markdown constructs found
-in the draft. If that list isn't empty, remove those constructs and recount. Fall back to counting
-by explicit tally in this skill's own reasoning, and to checking for Markdown by eye, if the command
-fails for any of the following reasons:
+`<revisions>` is how many revisions the draft has had so far, starting at `0`. The stdout is a JSON
+object. Act on its `next`, never on your own reading of the other fields:
+
+| `next` | Action |
+| --- | --- |
+| `deliver` | Continue to Step 2 |
+| `remove_markdown` | Remove the constructs `markdown_syntax` lists, then recount with `<revisions>` plus one |
+| `shorten` | Drop or merge the next-least-essential point, then recount with `<revisions>` plus one |
+
+`next` is `deliver` with `gave_up` set to `true` once the revision ceiling is reached with a defect
+remaining. That fact stays visible in this conversation's own transcript, which is enough for
+`explain`'s own trailing Debug step to reference later if its debug mode is on.
+
+Follow `${CLAUDE_PLUGIN_ROOT}/references/explain-manual-counting.md` instead, as a skill delivering
+plaintext, if the command fails for any of the following reasons:
 
 - `uv` is not installed (e.g. `command not found`)
 - `uv` itself errors before running the script (e.g. it cannot write its temporary files)
@@ -120,10 +129,9 @@ prose.
 
 ## Guardrails
 
-- Counting and re-shortening (bounded to 3 attempts) is required, not optional -- never deliver
-  the first draft without tallying it against `$target` first.
-- The delivered prose must contain zero Markdown syntax -- confirm through `markdown_syntax` being
-  empty, or by eye when the count fell back to a tally, that none of the following crept in:
+- Counting is required, not optional -- never deliver the first draft without counting it first.
+- The delivered prose must contain zero Markdown syntax -- rely on `next`, or check by eye when the
+  count fell back to a tally, to confirm that none of the following crept in:
   - Headers
   - Emphasis markers
   - Backtick code spans
