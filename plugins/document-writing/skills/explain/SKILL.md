@@ -8,6 +8,7 @@ argument-hint: '"<topic>" "<audience>" "<how-long>" [-o <path>] [-l <language>] 
 arguments: [topic, audience]
 allowed-tools:
   - Agent
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/explain-manual-preparation.md)
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_prepare.py *)
   - Bash(uv run --no-cache --script ${CLAUDE_PLUGIN_ROOT}/scripts/explain_how_long.py *)
   - Skill(explain-for-stated-audience)

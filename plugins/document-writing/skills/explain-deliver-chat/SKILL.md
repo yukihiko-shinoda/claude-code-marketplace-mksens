@@ -6,6 +6,8 @@ description: >-
   Skill tool, not typed directly: its caller (currently only explain) has already resolved the
   output language, converted the how-long budget, confirmed the budget is not strict with no -o
   path given, and obtained the content plan before calling here.
+allowed-tools:
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md)
 when_to_use: >-
   Not for file delivery (explain-deliver-file, regardless of strict), and not for chat delivery
   under a strict, hard-ceiling budget with its plaintext-only restriction

@@ -8,6 +8,7 @@ description: >-
   how-long budget, confirmed an -o path was given, and obtained the content plan before calling
   here.
 allowed-tools:
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/structured-prose-formatting.md)
   - Glob
   - Write
   - Edit
