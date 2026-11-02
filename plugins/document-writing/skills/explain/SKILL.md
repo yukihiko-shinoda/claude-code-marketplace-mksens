@@ -2,12 +2,8 @@
 name: explain
 description: >-
   Outputs an actual explanation, not an outline of points to cover, about a topic for a stated
-  audience, sized to a length budget given as seconds/minutes to read or a direct character count.
-  Delegates argument parsing, language normalization, budget conversion, and routing to a bundled
-  Python script (falling back to a prompt-based procedure when uv is unavailable or the language
-  needs detecting), calls explain-for-stated-audience for the content plan, then routes to one of
-  three case-skills -- explain-deliver-chat-strict, explain-deliver-chat, or explain-deliver-file
-  -- to draft and deliver the prose, and renders its own trailing debug section.
+  audience, sized to a length budget given as seconds/minutes to read or a direct character count,
+  and delivered to chat or a Markdown file.
 argument-hint: '"<topic>" "<audience>" "<how-long>" [-o <path>] [-l <language>] [--debug]'
 arguments: [topic, audience]
 allowed-tools:
@@ -20,8 +16,10 @@ allowed-tools:
   - Skill(explain-deliver-file)
   - AskUserQuestion
 when_to_use: >-
-  The audience is always stated directly by the caller — this skill never infers it from a draft
-  or transcript.
+  Use when asked to explain or write up a topic for a named reader within a length or reading-time
+  limit, e.g. "explain Docker layers to a new hire in 2 minutes" or "a 280-character explanation of
+  this bug for social media". The audience is always stated directly by the caller — this skill
+  never infers it from a draft or transcript.
 ---
 
 # Explain
