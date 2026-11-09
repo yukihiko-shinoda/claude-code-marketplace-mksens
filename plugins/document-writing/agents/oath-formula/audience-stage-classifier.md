@@ -11,7 +11,11 @@ description: >-
   content-value terms (`owed_terms`) — the raw O/A/T/H letter and evidence stay sealed inside this
   agent's isolated context unless the caller explicitly requests debug mode.
 tools: Read, Glob, Grep
-model: sonnet
+# On Amazon Bedrock, a subagent model alias resolves to an invalid inference-profile ID and the
+# subagent fails at its first call. Restore once these issues are fixed:
+# - https://github.com/anthropics/claude-code/issues/98298
+# - https://github.com/anthropics/claude-code/issues/98516
+# model: sonnet
 color: cyan
 ---
 

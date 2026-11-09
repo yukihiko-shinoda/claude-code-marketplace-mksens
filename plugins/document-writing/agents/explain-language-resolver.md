@@ -7,7 +7,11 @@ description: >-
   that's also absent, detects the language from the topic and audience text themselves. Returns a
   single ISO 639-1 code plus which source it came from, so the calling skill never has to embed the
   normalization table, priority ordering, or language-detection judgment in its own reasoning.
-model: sonnet
+# On Amazon Bedrock, a subagent model alias resolves to an invalid inference-profile ID and the
+# subagent fails at its first call. Restore once these issues are fixed:
+# - https://github.com/anthropics/claude-code/issues/98298
+# - https://github.com/anthropics/claude-code/issues/98516
+# model: sonnet
 color: blue
 ---
 

@@ -8,7 +8,11 @@ description: >-
   context and returns a per-term coverage verdict. Never modifies, creates, or suggests edits to the
   source file.
 tools: Read, Grep
-model: sonnet
+# On Amazon Bedrock, a subagent model alias resolves to an invalid inference-profile ID and the
+# subagent fails at its first call. Restore once these issues are fixed:
+# - https://github.com/anthropics/claude-code/issues/98298
+# - https://github.com/anthropics/claude-code/issues/98516
+# model: sonnet
 color: cyan
 ---
 
