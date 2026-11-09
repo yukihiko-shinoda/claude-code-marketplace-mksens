@@ -66,7 +66,9 @@ class MarkdownSyntax(Enum):
 
 
 class DraftLength:
-    """Measure a draft by the metric explain-how-long-converter chose."""
+    """Measure a draft by the metric explain-how-long-converter chose, leaving its diagrams out of the count."""
+
+    DIAGRAM = re.compile(r"^```mermaid[^\n]*\n.*?^```[ \t]*$", re.MULTILINE | re.DOTALL)
 
     def __init__(self, text: str, metric: Metric) -> None:
         """Keep the trimmed draft and the metric to measure it by."""
@@ -74,11 +76,16 @@ class DraftLength:
         self.metric = metric
 
     @property
+    def prose(self) -> str:
+        """Return the draft without its Mermaid diagram blocks, which never count toward the budget."""
+        return self.DIAGRAM.sub("", self.text).strip()
+
+    @property
     def length(self) -> int:
-        """Return the draft's length in characters or whitespace-separated words."""
+        """Return the prose's length in characters or whitespace-separated words."""
         if self.metric is Metric.CHARACTERS:
-            return len(self.text)
-        return len(self.text.split())
+            return len(self.prose)
+        return len(self.prose.split())
 
     def report(self, target: float) -> dict[str, object]:
         """Return the measured length, whether it fits the target, and any Markdown syntax found."""

@@ -68,6 +68,7 @@ must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-pr
 - Links
 - Mood
 - Trailing-summary-word
+- Diagrams
 
 Treat `$target` as a rough anchor judged by eye. Draft once -- a result landing a little outside
 `$target` either way is not a defect and does not need a rewrite.
@@ -90,6 +91,7 @@ Render the drafted explanation directly as this skill's chat response.
   - Links
   - Mood
   - Trailing words
+  - Diagrams
 - Treat a missing or malformed required key as an integration bug in the caller -- state which key
   is the problem and stop, rather than guessing a default or asking the human via
   `AskUserQuestion`. The required keys are:

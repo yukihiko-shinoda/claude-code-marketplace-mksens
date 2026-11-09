@@ -92,6 +92,7 @@ must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-pr
 - Links
 - Mood
 - Trailing-summary-word
+- Diagrams
 
 That file's heading rule starts section headings one level below whatever title heading
 already wraps the whole response -- here that is Step 2's `# $topic` heading, so section headings
@@ -111,7 +112,8 @@ inside the file start at `##`.
 #### Counting the draft
 
 Only when `$strict` is `true`. Count each draft's body text -- without the `# $topic` heading
-Step 2 adds -- with the bundled script, piping the draft in through a quoted heredoc:
+Step 2 adds -- with the bundled script, piping the draft in through a quoted heredoc. Pipe the
+`mermaid` diagram in along with the rest: the script leaves it out of the count itself.
 
 <!-- markdownlint-disable MD013 -->
 ```bash
@@ -174,6 +176,7 @@ delivering plaintext, if the command fails for any of the following reasons:
   - Links
   - Mood
   - Trailing words
+  - Diagrams
 - Treat a missing or malformed required key as an integration bug in the caller -- state which key
   is the problem and stop, rather than guessing a default or asking the human via
   `AskUserQuestion`. The required keys are:
