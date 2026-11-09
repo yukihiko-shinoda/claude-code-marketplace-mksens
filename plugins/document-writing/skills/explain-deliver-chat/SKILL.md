@@ -65,6 +65,7 @@ must follow the rules defined in `${CLAUDE_PLUGIN_ROOT}/references/structured-pr
 - Ordering
 - Conclusion/reason rendering
 - Heading
+- Links
 - Mood
 - Trailing-summary-word
 
@@ -86,6 +87,7 @@ Render the drafted explanation directly as this skill's chat response.
   - Conclusion
   - Reason
   - Headings
+  - Links
   - Mood
   - Trailing words
 - Treat a missing or malformed required key as an integration bug in the caller -- state which key
