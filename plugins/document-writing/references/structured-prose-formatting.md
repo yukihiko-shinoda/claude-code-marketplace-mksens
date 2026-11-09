@@ -50,6 +50,14 @@ Forbidden examples include a local-language equivalent of any of the following:
 Adding headings never changes the conclusion-then-nested-reason shape above -- it only wraps that
 same shape in labeled sections once there's enough of it to need them.
 
+## Links
+
+When a statement comes from a source whose URL already appears in this conversation -- in the
+user's own message, a file already read, or an earlier tool result -- link that source inline at the
+statement it supports. Never call `WebSearch` or `WebFetch` to find a link, and never write a URL
+from memory, since a recalled URL may not exist. With no such URL, the statement simply goes
+unlinked.
+
 ## Mood
 
 Phrase every sentence in a formal, polite, descriptive mood (e.g. Japanese `〜します`/`〜となります`)

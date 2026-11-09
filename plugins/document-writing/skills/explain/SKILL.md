@@ -165,6 +165,7 @@ file-write report) containing:
   - The topic
   - The audience
   - The how-long budget
+- Never call `WebSearch` or `WebFetch` during this skill or anything it delegates to.
 - Never do any of the following in this skill's own reasoning -- each is delegated whole to its
   own script, subagent, or skill (Steps 1-3); this skill's own job is only to resolve arguments,
   run those delegations in order, and forward each one's results as the next one's inputs:
