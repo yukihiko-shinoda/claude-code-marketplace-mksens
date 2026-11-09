@@ -10,7 +10,11 @@ description: >-
   the same judgment instead of each re-deriving it. Hands back the stage's owed content-value terms
   (`owed_terms`) — the raw O/A/T/H letter and evidence stay sealed unless the caller explicitly
   requests debug mode.
-model: sonnet
+# On Amazon Bedrock, a subagent model alias resolves to an invalid inference-profile ID and the
+# subagent fails at its first call. Restore once these issues are fixed:
+# - https://github.com/anthropics/claude-code/issues/98298
+# - https://github.com/anthropics/claude-code/issues/98516
+# model: sonnet
 color: cyan
 ---
 
