@@ -95,6 +95,36 @@ more detailed point nests one level deeper than the point it supports.
   a deeper header is never the same level as or shallower than the header that contains it.
 - Fenced code blocks and Markdown tables are the only exceptions: they may appear as the content
   of a list item without being broken into further nested bullets themselves.
+- Whenever a response has more than one main point (so it gets headers) and its content holds a
+  relationship the reader gains more from seeing than from reading -- a flow of events, a
+  hierarchy, an order of steps, or how parts depend on each other -- draw at least one diagram.
+  A single-point response, or one holding no such relationship, gets no diagram.
+  - Draw it as a `text` code block, in characters only -- never a `mermaid` block, since a
+    terminal or chat client may show Mermaid as raw code. Any shape that fits is fine: boxes,
+    arrows, branches, a cycle, or side-by-side columns.
+  - Never place anything that must line up with another line (a closing box border, an arrow
+    continuing past the label, a second column) to the right of a label holding
+    full-width/multibyte characters (Japanese, CJK, etc.) -- a full-width character takes two
+    columns in most monospace fonts, and symbols such as `→`, `∩`, `①` take one or two depending
+    on the font. Either end each line with its full-width label, drawing ASCII connectors (`+`,
+    `-`, `|`, `>`, `v`) to its left or on lines of their own:
+
+    ```text
+    ユーザーの質問
+        |
+        v
+    Mermaid対応?
+        |
+        +-- Yes --> 図として表示
+        |
+        +-- No ---> コードのまま表示
+    ```
+
+    or draw boxes or columns with half-width keys such as `[A]` and explain each key right below
+    the diagram (e.g. `A: ユーザーの質問`).
+  - Place the diagram as the content of a list item beneath the point it illustrates. It never
+    replaces that point's own sentence -- every point must still be stated in words, and the
+    diagram only adds a view of it.
 - Ordered lists (`1.`, `2.`, ...) are used when the sequence of items matters (e.g. steps to
   follow in order); unordered lists (`-`) are used otherwise.
 - Phrase every sentence in the formal, polite, descriptive mood corresponding to the selecting language.

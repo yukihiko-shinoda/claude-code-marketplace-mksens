@@ -13,8 +13,9 @@ after each revision:
    - Links
 
    If any is present, remove it, count that as one revision, and start the checks again.
-2. **Length check** -- tally the draft explicitly in `$metric`, without surrounding whitespace:
-   every character for `characters`, every whitespace-separated token for `words`. If the tally
+2. **Length check** -- tally the draft explicitly in `$metric`, without surrounding whitespace and
+   without any fenced `mermaid` diagram block, fences included: every character for `characters`,
+   every whitespace-separated token for `words`. If the tally
    exceeds `$target`, drop or merge the next-least-essential point, count that as one revision, and
    start the checks again.
 3. **Deliver** -- once both checks pass, continue to the calling skill's delivery step.
