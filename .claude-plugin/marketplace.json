@@ -8,6 +8,10 @@
     {
       "name": "document-writing",
       "source": "./plugins/document-writing"
+    },
+    {
+      "name": "git",
+      "source": "./plugins/git"
     }
   ]
 }

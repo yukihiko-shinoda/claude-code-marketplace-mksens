@@ -20,6 +20,9 @@ hand-craft its own output style from scratch:
   - `review-audience-coverage` — reviews an existing document against the audience its own framing
     implies, checking whether owed content-value terms are covered and whether domain-specific
     jargon is adequately explained
+- `git` plugin — adds skills for Git operations:
+  - `commit` — commits the current staging area with a title-only commit message, leaving any
+    explanation to comments around the target code itself
 
 ## Quickstart
 
@@ -68,6 +71,18 @@ Invoke it directly inside a Claude Code session:
 
 ```console
 /document-writing:review-audience-coverage <path-or-text> [--debug]
+```
+
+### How do I use the `commit` skill?
+
+Install the `git` plugin, stage the changes, then invoke it directly inside a Claude Code session:
+
+```console
+claude plugin install git@mksens
+```
+
+```console
+/git:commit
 ```
 
 ### How do I remove this marketplace?
