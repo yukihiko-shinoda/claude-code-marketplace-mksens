@@ -123,7 +123,8 @@ The list below defines terms used elsewhere in this document without redefining 
   judged against a rough anchor —
   an approximate character count (~280/140 for headings, ~119/60 for list items), not an exact tally. This anchor
   is a mental estimate only — never invoke a tool call (e.g. Bash, a script) to count characters against it, and a
-  draft that lands a little outside the anchor either way is not a defect that needs fixing.
+  draft that lands a little outside the anchor either way is not a defect that needs fixing. A diagram drawn under
+  the Diagrams rule never counts toward either anchor — judge both by the prose alone.
 - **`Banned word`**: Any of the heading-text exclusions listed further down in this document for heading wording —
   "Conclusion," "Reason," "Summary," "Abstract," "Concrete," a `Stage` name, a bracketed tag — and, in that same
   context, the equivalent word in whatever language other than English the response is written in.
@@ -157,6 +158,8 @@ Structure every response by working through the following steps in order:
 - **Step 6** — render each block's reason as a nested list, recursively, beneath its conclusion.
 - **Lists rule** — applies throughout, wherever a list shows up in the response.
 - **Headed lists rule** — applies throughout, wherever Step 4 gives a stage or block its own heading.
+- **Diagrams rule** — applies throughout, wherever a `Topic` crosses the heading threshold and holds a relationship
+  worth seeing.
 - **Mood rule** — applies throughout, wherever a sentence gets phrased in the response.
 - **Trailing-summary words rule** — applies throughout, wherever a `Trailing-summary word` shows up in the response.
 
@@ -621,6 +624,61 @@ contain exactly one block, or one level down exactly one half, and nothing besid
 `Lone-item promotion` never manufactures a list where none is needed: once the lone item's own statement has moved
 up, only its children — if it has any — still need a list of their own, nested at this level in its place; with
 no children, nothing further renders below the heading.
+
+## Diagrams (applies throughout)
+
+This rule is not tied to any single step above — apply it to every `Topic` whose own content crosses Step 4's
+heading threshold. Such a `Topic` gets at least one diagram when its content holds a relationship that the
+`OATH Customer` gains more from seeing than from reading, such as any of the following:
+
+- A flow of events
+- A hierarchy
+- An order of steps
+- How parts depend on each other
+
+A `Topic` below the threshold, or one holding no such relationship, gets no diagram — a short answer gains nothing
+from a picture of itself.
+
+Draw the diagram as a `text` code block, in characters only — never a `mermaid` block, since a terminal or chat
+client may show Mermaid as raw code. The diagram may take whatever shape fits the relationship, such as any of the
+following:
+
+- Boxes
+- A flow with arrows
+- Branches
+- A cycle
+- Side-by-side columns
+
+The only limit concerns labels holding full-width/multibyte characters (Japanese, CJK, etc.): never place anything
+to the right of such a label on the same line that must line up with another line, such as a closing box border, an
+arrow continuing past the label, or a second column. A full-width character takes two columns in most monospace
+fonts, and some symbols (e.g. `→`, `∩`, `①`) take one or two depending on the font, so anything drawn to their right
+falls out of line. Either of the following keeps such a diagram aligned:
+
+- **Label at line end:** end each line with its full-width label, drawing arrows and branches to its left or on
+  lines of their own, with ASCII connectors (`+`, `-`, `|`, `>`, `v`):
+
+  ```text
+  ユーザーの質問
+      |
+      v
+  Mermaid対応?
+      |
+      +-- Yes --> 図として表示
+      |
+      +-- No ---> コードのまま表示
+  ```
+
+- **Half-width keys:** draw boxes or columns with half-width keys such as `[A]` inside them, then explain each key
+  in the response's language right below the diagram (e.g. `A: ユーザーの質問`).
+
+Place the diagram as the content of a bullet item in the reason list beneath the `Conclusion` it illustrates, per
+Step 6 and the Headed lists rule. It never replaces a `Conclusion` sentence, and it never opens a block, since Step
+3 still puts the point first.
+
+A diagram counts toward neither the heading threshold nor the list-item threshold — judge both by the prose alone.
+Since the diagram costs nothing against those thresholds, the prose alone must still cover every point; the
+diagram only adds a view of it.
 
 ## Mood (applies throughout)
 
